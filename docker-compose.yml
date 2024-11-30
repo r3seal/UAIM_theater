@@ -5,8 +5,11 @@ services:
     build: ./backend
     ports:
       - "5000:5000"
+    volumes: 
+      - ./backend:/app  # Poprawne mapowanie wolumenu
     environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/mydatabase
+      FLASK_ENV: development
+      DATABASE_URL: postgresql://postgres:password@db:5432/mydatabase  # Usuń "-" przed zmienną
     depends_on:
       - db
     networks:
@@ -24,5 +27,5 @@ services:
       - theater_network
 
 networks:
-  theater_network:   # Definiowanie wspólnej sieci dla obu kontenerów
+  theater_network:  # Definiowanie wspólnej sieci dla obu kontenerów
     driver: bridge

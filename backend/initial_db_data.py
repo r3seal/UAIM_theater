@@ -1,54 +1,97 @@
-from datetime import datetime
 from app import db
-from app.models import Spectacle, Hall, Seat, User, Ticket, Transaction, SeatStatus
+from app.models import User, RoleEnum, Spectacle, Hall, Seat, Ticket, Transaction, SeatStatus
+from datetime import datetime, timedelta
+from decimal import Decimal
 
-# Dodaj przykładowe spektakle
-spectacle1 = Spectacle(title="Hamlet", description="Tragiczna opowieść o duńskim księciu", date=datetime(2023, 12, 20, 18, 0), duration=120)
-spectacle2 = Spectacle(title="Król Lear", description="Historia szaleństwa i zdrady", date=datetime(2024, 1, 15, 19, 30), duration=150)
+# Ważne: wkleic kod po wykonaniu komendy: docker-compose exec backend flask shell
+# Usuwanie istniejących danych i tworzenie nowych tabel
+db.drop_all()
+db.create_all()
 
-db.session.add(spectacle1)
-db.session.add(spectacle2)
+# Dodaj użytkowników
+user1 = User(name="John Doe", email="john@example.com", phone="123456789", role=RoleEnum.user)
+user1.set_password("password123")
 
-# Dodaj przykładowe sale
-hall1 = Hall(name="Sala Główna", capacity=100)
-hall2 = Hall(name="Sala Kameralna", capacity=50)
+admin = User(name="Admin", email="admin@example.com", phone="987654321", role=RoleEnum.admin)
+admin.set_password("adminpass")
 
-db.session.add(hall1)
-db.session.add(hall2)
+db.session.add_all([user1, admin])
 
-# Dodaj przykładowe miejsca
-seat1 = Seat(hall_id=3, row="A", seat_number=1, is_vip=True)
-seat2 = Seat(hall_id=4, row="A", seat_number=2, is_vip=False)
-seat3 = Seat(hall_id=4, row="B", seat_number=5, is_vip=False)
+# Dodaj sale
+hall1 = Hall(name="Main Hall", capacity=200)
+hall2 = Hall(name="Small Hall", capacity=100)
 
-db.session.add_all([seat1, seat2, seat3])
+db.session.add_all([hall1, hall2])
+db.session.flush()  # Wymusza zapis, aby móc korzystać z ID
 
-# Dodaj przykładowych użytkowników
-user1 = User(name="Anna Kowalska", email="anna@example.com", phone="123456789")
-user2 = User(name="Jan Nowak", email="jan@example.com", phone="987654321")
+# Dodaj miejsca w salach
+seats = []
+for hall, capacity in [(hall1, 200), (hall2, 100)]:
+    for row in range(1, 11):  # 10 rzędów
+        for seat_num in range(1, capacity // 10 + 1):  # Dzielimy po równo miejsca na rzędy
+            seats.append(Seat(hall_id=hall.hall_id, row=f"Row {row}", seat_number=seat_num, is_vip=(seat_num <= 5)))
+db.session.add_all(seats)
 
-db.session.add(user1)
-db.session.add(user2)
+# Dodaj spektakle
+spectacle1 = Spectacle(
+    title="Hamlet",
+    description="A classic play by William Shakespeare.",
+    date=datetime.now() + timedelta(days=5),
+    duration=180
+)
+spectacle2 = Spectacle(
+    title="Romeo and Juliet",
+    description="Another classic by Shakespeare.",
+    date=datetime.now() + timedelta(days=10),
+    duration=150
+)
+db.session.add_all([spectacle1, spectacle2])
+db.session.flush()
 
-# Dodaj przykładowe bilety
-ticket1 = Ticket(spectacle_id=3, seat_id=1, user_id=1, price=50.0, purchase_date=datetime(2023, 11, 10, 15, 0), status="paid")
-ticket2 = Ticket(spectacle_id=4, seat_id=2, user_id=2, price=30.0, purchase_date=datetime(2023, 12, 1, 10, 0), status="reserved")
+# Dodaj status miejsc dla spektakli
+seat_statuses = []
+for seat in seats[:20]:  # Pierwsze 20 miejsc
+    seat_statuses.append(SeatStatus(spectacle_id=spectacle1.spectacle_id, seat_id=seat.seat_id, is_reserved=False, is_sold=False))
+for seat in seats[20:40]:  # Następne 20 miejsc
+    seat_statuses.append(SeatStatus(spectacle_id=spectacle2.spectacle_id, seat_id=seat.seat_id, is_reserved=True, is_sold=True))
+db.session.add_all(seat_statuses)
 
+# Dodaj bilety
+ticket1 = Ticket(
+    spectacle_id=spectacle1.spectacle_id,
+    seat_id=seats[0].seat_id,
+    user_id=user1.user_id,
+    price=Decimal("50.00"),
+    purchase_date=datetime.now(),
+    status="Paid"
+)
+ticket2 = Ticket(
+    spectacle_id=spectacle2.spectacle_id,
+    seat_id=seats[20].seat_id,
+    user_id=user1.user_id,
+    price=Decimal("70.00"),
+    purchase_date=datetime.now(),
+    status="Paid"
+)
 db.session.add_all([ticket1, ticket2])
 
-# Dodaj przykładowe transakcje
-transaction1 = Transaction(ticket_id=3, amount=50.0, payment_method="card", status="completed", transaction_date=datetime(2023, 11, 10, 15, 5))
-transaction2 = Transaction(ticket_id=4, amount=30.0, payment_method="paypal", status="pending", transaction_date=datetime(2023, 12, 1, 10, 10))
-
+# Dodaj transakcje
+transaction1 = Transaction(
+    ticket_id=ticket1.ticket_id,
+    amount=Decimal("50.00"),
+    payment_method="Credit Card",
+    status="Completed",
+    transaction_date=datetime.now()
+)
+transaction2 = Transaction(
+    ticket_id=ticket2.ticket_id,
+    amount=Decimal("70.00"),
+    payment_method="PayPal",
+    status="Completed",
+    transaction_date=datetime.now()
+)
 db.session.add_all([transaction1, transaction2])
 
-# Dodaj przykładowe statusy miejsc
-seat_status1 = SeatStatus(spectacle_id=3, seat_id=1, is_reserved=True, is_sold=True)
-seat_status2 = SeatStatus(spectacle_id=4, seat_id=2, is_reserved=True, is_sold=False)
-seat_status3 = SeatStatus(spectacle_id=3, seat_id=3, is_reserved=False, is_sold=False)
-
-db.session.add_all([seat_status1, seat_status2, seat_status3])
-
-# Zapisz zmiany do bazy danych
+# Zatwierdzenie zmian
 db.session.commit()
-print("Dane przykładowe zostały dodane do bazy danych.")
+print("Database populated with sample data!")
