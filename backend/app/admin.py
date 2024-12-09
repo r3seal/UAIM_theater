@@ -1,18 +1,22 @@
 from flask import Blueprint, jsonify
 from .models import User
-from . import db
-from flask_login import login_required, current_user
 from .models import RoleEnum
 import logging
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 
 logging.basicConfig(level=logging.DEBUG)
 
-users_blueprint = Blueprint('users', __name__)
-@users_blueprint.route('/', methods=['GET'])
-@login_required
+admin_blueprint = Blueprint('admin', __name__)
+
+
+@admin_blueprint.route('/users', methods=['GET'])
+@jwt_required()
 def get_users():
-    logging.debug(f"Current user role: {current_user.role}")
-    if current_user.role == RoleEnum.admin:
+    current_user_id = get_jwt_identity()
+    jwt_data = get_jwt()
+    current_user_role = jwt_data.get('role')
+    logging.debug(f"Current user ID: {current_user_id}, Role: {current_user_role}")
+    if current_user_role != RoleEnum.admin:
         users = User.query.all()
         return jsonify([
             {
