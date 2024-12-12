@@ -1,18 +1,18 @@
-# Dockerfile dla backendu
+# Dockerfile for the backend
 FROM python:3.9-slim
 
-# Ustawienie katalogu roboczego
+# Set the working directory
 WORKDIR /app
 
-# Skopiowanie pliku requirements.txt i zainstalowanie zależności
+# Copy the requirements.txt file and install the dependencies
 COPY requirements.txt .
 RUN pip install -r requirements.txt
 
-# Skopiowanie pozostałych plików aplikacji
+# Copy the rest of the application files
 COPY . .
 
-# Eksportowanie portu, na którym działa aplikacja
+# Expose the port on which the application will run
 EXPOSE 5000
 
-# Komenda do uruchomienia aplikacji Flask
+# Command to run the Flask application
 CMD ["python", "app.py"]
