@@ -13,9 +13,14 @@ db = SQLAlchemy()
 migrate = Migrate()
 mail = Mail()
 
-def create_app():
+def create_app(testing=False):
     app = Flask(__name__)
-    app.config.from_object(Config)
+
+    if testing:
+        from .config import TestingConfig
+        app.config.from_object(TestingConfig)
+    else:
+        app.config.from_object(Config)
 
     # Database initialization
     db.init_app(app)

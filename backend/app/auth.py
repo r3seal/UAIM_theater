@@ -14,6 +14,7 @@ def validate_email_format(email):
         validate_email(email)
         return True
     except EmailNotValidError as e:
+        print(f"Email validation error: {str(e)}")
         return False
 
 # User registration route

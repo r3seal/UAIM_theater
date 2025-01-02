@@ -3,12 +3,9 @@ from .models import User
 from . import db
 from .models import Ticket, Spectacle, Hall, Seat, TicketSold
 import logging
-from datetime import datetime
 from .utils import send_ticket_email
 from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import logging
-import smtplib 
-from email.mime.text import MIMEText
 import os
 
 

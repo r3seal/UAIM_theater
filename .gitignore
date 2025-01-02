@@ -1,3 +1,5 @@
 venv/
 backend/app/__pycache__/
 .env
+.coverage
+backend/tests/__pycache__/
