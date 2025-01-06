@@ -1,2 +1,2 @@
-const urlAPI = "http://192.168.0.17";
+const urlAPI = "your ip address";
 export default urlAPI;
