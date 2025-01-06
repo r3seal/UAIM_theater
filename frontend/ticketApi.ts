@@ -1,9 +1,10 @@
 import axios from 'axios';
+import urlAPI from './urlAPI';
 
 export const buyTickets = async (token: string, seatIds: number[], spectacleId: number) => {
   try {
     const response = await axios.post(
-      'http://192.168.230.1:5000/buy',
+      `${urlAPI}:5000/spectacles/buy`,
       { seat_ids: seatIds, spectacle_id: spectacleId },
       { headers: { Authorization: `Bearer ${token}` } }
     );
