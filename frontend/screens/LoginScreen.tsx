@@ -1,6 +1,8 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import axios from 'axios';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import urlAPI from '../urlAPI';
 
 const LoginScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -9,12 +11,13 @@ const LoginScreen = ({ navigation }: any) => {
 
   const login = async () => {
     try {
-      const response = await axios.post('http://192.168.230.1:5000/auth/login', {
+      const response = await axios.post(`${urlAPI}:5000/auth/login`, {
         email,
         password
       });
       const { access_token } = response.data;
-      // Store the token securely (e.g., AsyncStorage)
+      await AsyncStorage.setItem('accessToken', access_token);
+      console.log(access_token);
       navigation.replace('SpectaclesList');
     } catch (error) {
       setErrorMessage('Invalid credentials');

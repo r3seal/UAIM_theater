@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { View, Button, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
 import axios from 'axios';
+import urlAPI from '../urlAPI';
 
 const SpectaclesListScreen = ({ navigation }: any) => {
   const [spectacles, setSpectacles] = useState<any[]>([]);
@@ -10,7 +11,7 @@ const SpectaclesListScreen = ({ navigation }: any) => {
   useEffect(() => {
     const fetchSpectacles = async () => {
       try {
-        const response = await axios.get('http://192.168.230.1:5000/spectacles/');
+        const response = await axios.get(`${urlAPI}:5000/spectacles/`);
         setSpectacles(response.data);
         setLoading(false);
       } catch (error) {

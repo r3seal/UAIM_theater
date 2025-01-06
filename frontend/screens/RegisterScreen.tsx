@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { View, TextInput, Button, Text } from 'react-native';
 import axios from 'axios';
+import urlAPI from '../urlAPI';
 
 const RegisterScreen = ({ navigation }: any) => {
   const [email, setEmail] = useState('');
@@ -10,7 +11,7 @@ const RegisterScreen = ({ navigation }: any) => {
 
   const register = async () => {
     try {
-      const response = await axios.post('http://192.168.230.1:5000/auth/register', {
+      const response = await axios.post(`${urlAPI}:5000/auth/register`, {
         email,
         password,
         name
