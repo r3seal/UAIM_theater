@@ -1,5 +1,8 @@
 from app import create_app, db 
-from app.models import Hall, Seat, Spectacle, User, RoleEnum
+from app.models import Hall, Seat, Spectacle, User, RoleEnum, Ticket, TicketSold
+from datetime import datetime, timedelta
+
+
 
 app = create_app()
 
@@ -7,40 +10,112 @@ app = create_app()
 with app.app_context():
 
 
-    # Add halls
-    hall1 = Hall(name="Main Hall", capacity=100)
-    hall2 = Hall(name="Small Hall", capacity=100)
+    admin = User(name="Admin User", email="admin@example.com", phone="123456789", role=RoleEnum.admin)
 
-    # Add data to the session and commit to generate `hall_id`
-    db.session.add(hall1)
-    db.session.add(hall2)
+    admin.set_password("admin")
+
+    db.session.add(admin)
+
     db.session.commit()
 
-    # Generate seats for each hall
-    for hall in [hall1, hall2]:
-        for row in range(1, 11):  # 10 rows
-            for seat_number in range(1, 11):  # 10 seats per row
+
+    users_data = [
+        {"name": "John Doe", "email": "johndoe@gmail.com", "password": "password123", "phone": "123456789"},
+        {"name": "Alice Smith", "email": "alicesmith@gmail.com", "password": "mypassword456", "phone": "987654321"},
+        {"name": "Michael Johnson", "email": "michaeljohnson@yahoo.com", "password": "securepass789", "phone": "456789123"},
+        {"name": "Sophia Brown", "email": "sophiabrown@hotmail.com", "password": "brownpass321", "phone": "789123456"},
+        {"name": "Emma Davis", "email": "emmadavis@mail.com", "password": "davisemma111", "phone": "147258369"},
+        {"name": "William Garcia", "email": "williamgarcia@outlook.com", "password": "garciapass222", "phone": "963852741"},
+        {"name": "Olivia Rodriguez", "email": "oliviarodriguez@gmail.com", "password": "rodriguezpass333", "phone": "159753486"},
+        {"name": "David Miller", "email": "davidmiller@yahoo.com", "password": "millerpass444", "phone": "258369147"},
+        {"name": "Isabella Martinez", "email": "isabellamartinez@hotmail.com", "password": "martinezpass555", "phone": "741852963"},
+        {"name": "Robert Wilson", "email": "robertwilson@mail.com", "password": "wilsonpass666", "phone": "369147258"},
+        {"name": "Emily Moore", "email": "emilymoore@outlook.com", "password": "moorepass777", "phone": "753159486"},
+        {"name": "Liam Taylor", "email": "liamtaylor@gmail.com", "password": "taylorpass888", "phone": "852963741"},
+        {"name": "Charlotte Anderson", "email": "charlotteanderson@yahoo.com", "password": "andersonpass999", "phone": "963741852"},
+        {"name": "Ethan Thomas", "email": "ethanthomas@hotmail.com", "password": "thomaspass000", "phone": "147369258"},
+        {"name": "Amelia Walker", "email": "ameliawalker@mail.com", "password": "walkerpass112", "phone": "258147369"}
+    ]
+
+    users = []
+
+    for user_data in users_data:
+        # Create a User instance
+        user = User(name=user_data["name"], email=user_data["email"], phone=user_data["phone"], role=RoleEnum.user)
+
+        users.append(user)
+        
+        # Set the user's password (hashing it using set_password method)
+        user.set_password(user_data["password"])
+
+        # Add the user to the session
+        db.session.add(user)
+
+    db.session.commit()
+
+    # Create and add 10 halls
+    halls = [
+        Hall(name="Main Hall", capacity=200),
+        Hall(name="Side Hall", capacity=200),
+        Hall(name="Royal Hall", capacity=200),
+        Hall(name="Arena Hall", capacity=200),
+        Hall(name="Opera House", capacity=200),
+        Hall(name="Grand Theatre", capacity=200),
+        Hall(name="City Centre Hall", capacity=200),
+        Hall(name="Concert Hall", capacity=200),
+        Hall(name="Studio Hall", capacity=200),
+        Hall(name="VIP Hall", capacity=200)
+    ]
+    
+    for hall in halls:
+        db.session.add(hall)
+
+    db.session.commit()
+
+    # Create and add 10 spectacles
+    spectacles = [
+        Spectacle(title="The Phantom of the Opera", description="A timeless musical about love, mystery, and obsession.", date=datetime.now() + timedelta(days=1), duration=150),
+        Spectacle(title="Shakespeare's Hamlet", description="A classic tragedy about power, revenge, and betrayal.", date=datetime.now() + timedelta(days=2), duration=180),
+        Spectacle(title="The Lion King", description="A captivating musical that follows the life of Simba, the lion prince.", date=datetime.now() + timedelta(days=3), duration=120),
+        Spectacle(title="Les Misérables", description="A dramatic and emotional story of love, sacrifice, and redemption.", date=datetime.now() + timedelta(days=4), duration=210),
+        Spectacle(title="Wicked", description="The untold story of the witches of Oz.", date=datetime.now() + timedelta(days=5), duration=150),
+        Spectacle(title="Mamma Mia!", description="A musical comedy featuring the songs of ABBA.", date=datetime.now() + timedelta(days=6), duration=140),
+        Spectacle(title="Cats", description="A magical and unforgettable musical about a tribe of cats.", date=datetime.now() + timedelta(days=7), duration=120),
+        Spectacle(title="Chicago", description="A jazz-infused musical about crime, corruption, and fame.", date=datetime.now() + timedelta(days=8), duration=130),
+        Spectacle(title="Hamilton", description="The revolutionary musical about the founding father of the United States.", date=datetime.now() + timedelta(days=9), duration=160),
+        Spectacle(title="The Wizard of Oz", description="A heartwarming story of a young girl and her adventure in the magical land of Oz.", date=datetime.now() + timedelta(days=10), duration=140)
+    ]
+    
+    for spectacle in spectacles:
+        db.session.add(spectacle)
+
+    db.session.commit()
+
+    seats = []
+    for hall in halls:
+        for row in range(1, 11):
+            for seat_number in range(1, 21):  
                 seat = Seat(hall_id=hall.hall_id, row=row, seat_number=seat_number)
+                seats.append(seat)
                 db.session.add(seat)
 
     db.session.commit()
 
-    # Add users
-    admin = User(name="Admin User", email="admin@example.com", phone="123456789", role=RoleEnum.admin)
-    user1 = User(name="User One", email="user1@example.com", phone="123456789", role=RoleEnum.user)
-    user2 = User(name="User Two", email="user2@example.com", phone="123456789", role=RoleEnum.user)
+    # Create and add 10 tickets per spectacle
+    tickets = []
+    for spectacle in spectacles:
+        for seat in seats[:10]:  # Use first 10 seats for simplicity
+            ticket = Ticket(seat_id=seat.seat_id, spectacle_id=spectacle.spectacle_id, price=50.0)
+            tickets.append(ticket)
+            db.session.add(ticket)
 
-    # Set passwords for the users (using the `set_password` method from the `User` model)
-    admin.set_password("adminpassword")
-    user1.set_password("user1password")
-    user2.set_password("user2password")
+    db.session.commit()
 
-    # Add users to the session
-    db.session.add(admin)
-    db.session.add(user1)
-    db.session.add(user2)
+    # Create and add 10 sold tickets
+    for i, ticket in enumerate(tickets[:10]):  # First 10 tickets sold
+        ticket_sold = TicketSold(ticket_id=ticket.ticket_id, user_id=users[i % len(users)].user_id)
+        db.session.add(ticket_sold)
 
-    # Commit the data to the database
     db.session.commit()
 
     print("Data has been successfully added!")
