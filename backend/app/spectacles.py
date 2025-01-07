@@ -20,7 +20,7 @@ def get_spectacles():
     spectacles = Spectacle.query.all()
     return jsonify([
         {
-            "spectatle_id": spectacle.spectacle_id,
+            "spectacle_id": spectacle.spectacle_id,
             "title": spectacle.title,
             "description": spectacle.description,
             "date": spectacle.date,
