@@ -49,14 +49,14 @@ const SpectaclesListScreen = ({ navigation }: any) => {
       <Button title="Go to Register" onPress={() => navigation.navigate('Register')} />
       <FlatList
         data={spectacles}
-        keyExtractor={(item) => item.spectatle_id}
+        keyExtractor={(item) => item.spectacle_id}
         renderItem={({ item }) => (
           <View style={styles.spectacleItem}>
             <Text style={styles.title}>{item.title ?? 'No Title'}</Text>
             <Text style={styles.description}>{item.description ?? 'No Description'}</Text>
             <Button
               title="Select Seats"
-              onPress={() => navigation.navigate('SeatSelection', { spectacleId: item.spectatle_id })}
+              onPress={() => navigation.navigate('SeatSelection', { spectacleId: item.spectacle_id })}
             />
           </View>
         )}
