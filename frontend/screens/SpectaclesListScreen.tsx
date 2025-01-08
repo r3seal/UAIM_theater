@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Text, FlatList, StyleSheet, ActivityIndicator } from 'react-native';
+import { View, Button, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
 import axios from 'axios';
 import urlAPI from '../urlAPI';
 
@@ -26,11 +26,18 @@ const SpectaclesListScreen = ({ navigation }: any) => {
     fetchSpectacles();
   }, []);
 
+  // Funkcja do formatowania daty
+  const formatDate = (dateString: string) => {
+    const date = new Date(dateString);
+    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+    return date.toLocaleString('en-GB', options); // Formatuje na '06 Jan 2025, 13:09'
+  };
+
   if (loading) {
     return (
       <View style={styles.centered}>
-        <ActivityIndicator size="large" color="#0000ff" />
-        <Text>Loading spectacles...</Text>
+        <ActivityIndicator size="large" color="#800000" />
+        <Text style={styles.loadingText}>Loading spectacles...</Text>
       </View>
     );
   }
@@ -45,19 +52,40 @@ const SpectaclesListScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <Button title="Go to Login" onPress={() => navigation.navigate('Login')} />
-      <Button title="Go to Register" onPress={() => navigation.navigate('Register')} />
+      <View style={styles.authButtonsContainer}>
+        <TouchableOpacity
+          style={styles.authButton}
+          onPress={() => navigation.navigate('Login')}
+        >
+          <Text style={styles.authButtonText}>Login</Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.authButton}
+          onPress={() => navigation.navigate('Register')}
+        >
+          <Text style={styles.authButtonText}>Register</Text>
+        </TouchableOpacity>
+      </View>
+
       <FlatList
         data={spectacles}
         keyExtractor={(item) => item.spectacle_id}
         renderItem={({ item }) => (
           <View style={styles.spectacleItem}>
-            <Text style={styles.title}>{item.title ?? 'No Title'}</Text>
-            <Text style={styles.description}>{item.description ?? 'No Description'}</Text>
-            <Button
-              title="Select Seats"
+            <Text style={styles.spectacleTitle}>{item.title ?? 'No Title'}</Text>
+            {/* Dodanie daty i godziny */}
+            {item.date && (
+              <Text style={styles.spectacleDateTime}>
+                {formatDate(item.date)}
+              </Text>
+            )}
+            <Text style={styles.spectacleDescription}>{item.description ?? 'No Description'}</Text>
+            <TouchableOpacity
+              style={styles.selectButton}
               onPress={() => navigation.navigate('SeatSelection', { spectacleId: item.spectacle_id })}
-            />
+            >
+              <Text style={styles.selectButtonText}>Select Seats</Text>
+            </TouchableOpacity>
           </View>
         )}
       />
@@ -67,32 +95,81 @@ const SpectaclesListScreen = ({ navigation }: any) => {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 20,
+    flex: 1,
+    paddingHorizontal: 20,
+    backgroundColor: '#001F3F',
+  },
+  authButtonsContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+    marginTop: 20,
+    marginBottom: 30,
+  },
+  authButton: {
+    backgroundColor: '#800000',
+    paddingVertical: 10,
+    paddingHorizontal: 20,
+    borderRadius: 5,
+  },
+  authButtonText: {
+    fontSize: 18,
+    color: '#FFFFFF',
+    fontWeight: 'bold',
   },
   spectacleItem: {
     marginBottom: 20,
-    padding: 10,
-    backgroundColor: '#f8f8f8',
-    borderRadius: 8,
+    padding: 20,
+    backgroundColor: '#002D62',
+    borderRadius: 10,
     borderWidth: 1,
     borderColor: '#ddd',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 4,
+    elevation: 5,
   },
-  title: {
-    fontSize: 18,
+  spectacleTitle: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    color: '#FFFFFF',
+  },
+  spectacleDateTime: {
+    marginTop: 5,
+    color: '#FF4136', // Czerwony kolor dla daty i godziny
+    fontSize: 16,
     fontWeight: 'bold',
   },
-  description: {
-    marginTop: 5,
-    color: '#555',
+  spectacleDescription: {
+    marginTop: 10,
+    color: '#CCCCCC',
+  },
+  selectButton: {
+    marginTop: 15,
+    paddingVertical: 12,
+    backgroundColor: '#800000', // Ciemniejszy czerwony
+    borderRadius: 5,
+    alignItems: 'center',
+  },
+  selectButtonText: {
+    color: '#FFFFFF',
+    fontSize: 18,
+    fontWeight: 'bold',
   },
   centered: {
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
   },
+  loadingText: {
+    marginTop: 10,
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
   errorText: {
     color: 'red',
     fontSize: 16,
+    textAlign: 'center',
   },
 });
 

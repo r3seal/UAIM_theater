@@ -5,7 +5,7 @@ import Seat from './Seat';
 const Hall = ({ hallName, seats, selectedSeats, setSelectedSeats }) => {
     const toggleSeat = (seat_id) => {
         if (selectedSeats.includes(seat_id)) {
-            setSelectedSeats(selectedSeats.filter(id => id !== seat_id));
+            setSelectedSeats(selectedSeats.filter((id) => id !== seat_id));
         } else {
             setSelectedSeats([...selectedSeats, seat_id]);
         }
@@ -41,32 +41,46 @@ const Hall = ({ hallName, seats, selectedSeats, setSelectedSeats }) => {
     );
 };
 
-
 const styles = StyleSheet.create({
     hallContainer: {
         justifyContent: 'center',
         alignItems: 'center',
         marginVertical: 20,
         padding: 20,
-        borderRadius: 30,
-        borderColor: 'rgb(150, 150, 150)',
-        borderWidth: 1,
+        borderRadius: 16,
+        backgroundColor: '#292929',
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 8 },
+        shadowOpacity: 0.3,
+        shadowRadius: 10,
+        elevation: 10,
     },
     title: {
-        fontSize: 24,
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#FFFFFF', // Czerwony jako akcent
         marginBottom: 20,
-    },
-    selectedText: {
-        fontSize: 16,
-        marginBottom: 20,
+        textTransform: 'uppercase',
+        textShadowColor: 'rgba(0, 0, 0, 0.5)',
+        textShadowOffset: { width: 1, height: 1 },
+        textShadowRadius: 4,
     },
     grid: {
         width: '90%',
+        backgroundColor: 'rgba(255, 255, 255, 0.1)', // Przezroczystość białego
+        padding: 12,
+        borderRadius: 20,
+        borderColor: 'rgba(255, 255, 255, 0.2)', // Subtelne obramowanie
+        borderWidth: 1,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 5,
     },
     row: {
         flexDirection: 'row',
         justifyContent: 'center',
-        marginBottom: 2,
+        marginVertical: 6,
     },
 });
 

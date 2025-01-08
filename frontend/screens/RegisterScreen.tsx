@@ -1,54 +1,160 @@
 import React, { useState } from 'react';
-import { View, TextInput, Button, Text } from 'react-native';
-import axios from 'axios';
-import urlAPI from '../urlAPI';
+import {
+    View,
+    Text,
+    TextInput,
+    TouchableOpacity,
+    StyleSheet,
+    Image,
+    KeyboardAvoidingView,
+    Platform,
+    ScrollView,
+} from 'react-native';
 
-const RegisterScreen = ({ navigation }: any) => {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [name, setName] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+const RegisterScreen = ({ navigation }) => {
+    const [name, setName] = useState('');
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [confirmPassword, setConfirmPassword] = useState('');
 
-  const register = async () => {
-    try {
-      const response = await axios.post(`${urlAPI}:5000/auth/register`, {
-        email,
-        password,
-        name
-      });
-      navigation.navigate('Login');
-    } catch (error) {
-      setErrorMessage('Error during registration');
-    }
-  };
+    const handleRegister = () => {
+        // Logika rejestracji
+        console.log('Rejestracja:', { name, email, password, confirmPassword });
+    };
 
-  return (
-    <View style={{ padding: 20 }}>
-      <Button title="Go to Login" onPress={() => navigation.navigate('Login')} />
-      <Button title="Back to Spectacles" onPress={() => navigation.navigate('SpectaclesList')} />
-      <TextInput
-        placeholder="Name"
-        value={name}
-        onChangeText={setName}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
-      />
-      <TextInput
-        placeholder="Email"
-        value={email}
-        onChangeText={setEmail}
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
-      />
-      <TextInput
-        placeholder="Password"
-        value={password}
-        onChangeText={setPassword}
-        secureTextEntry
-        style={{ height: 40, borderColor: 'gray', borderWidth: 1, marginBottom: 20 }}
-      />
-      {errorMessage ? <Text style={{ color: 'red' }}>{errorMessage}</Text> : null}
-      <Button title="Register" onPress={register} />
-    </View>
-  );
+    const handleLoginRedirect = () => {
+        navigation.navigate('Login'); // Przykład nawigacji do ekranu logowania
+    };
+
+    return (
+        <KeyboardAvoidingView
+            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            style={styles.container}
+        >
+            <ScrollView contentContainerStyle={styles.scrollContainer}>
+                <Text style={styles.title}>Create Account</Text>
+                <Text style={styles.subtitle}>Join us today!</Text>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Full Name"
+                        placeholderTextColor="#AAAAAA"
+                        value={name}
+                        onChangeText={setName}
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        placeholderTextColor="#AAAAAA"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        placeholderTextColor="#AAAAAA"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Confirm Password"
+                        placeholderTextColor="#AAAAAA"
+                        value={confirmPassword}
+                        onChangeText={setConfirmPassword}
+                        secureTextEntry
+                    />
+                </View>
+                <TouchableOpacity style={styles.button} onPress={handleRegister}>
+                    <Text style={styles.buttonText}>Sign Up</Text>
+                </TouchableOpacity>
+                <TouchableOpacity style={styles.loginLink} onPress={handleLoginRedirect}>
+                    <Text style={styles.loginText}>
+                        Already have an account?{' '}
+                        <Text style={styles.loginHighlight}>Log In</Text>
+                    </Text>
+                </TouchableOpacity>
+            </ScrollView>
+        </KeyboardAvoidingView>
+    );
 };
+
+const styles = StyleSheet.create({
+    container: {
+        flex: 1,
+        backgroundColor: '#001F3F', // Ciemnoniebieski tło
+        alignItems: 'center',
+        justifyContent: 'center',
+        padding: 20,
+    },
+    scrollContainer: {
+        flexGrow: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    logo: {
+        width: 100,
+        height: 100,
+        marginBottom: 20,
+    },
+    title: {
+        fontSize: 28,
+        fontWeight: 'bold',
+        color: '#FFFFFF', // Biały tekst
+        marginBottom: 10,
+    },
+    subtitle: {
+        fontSize: 16,
+        color: '#AAAAAA', // Jasnoszary tekst
+        marginBottom: 30,
+    },
+    inputContainer: {
+        width: '100%',
+        marginBottom: 20,
+    },
+    input: {
+        backgroundColor: '#002D62', // Ciemnoniebieski jaśniejszy niż tło
+        color: '#FFFFFF', // Biały tekst
+        paddingHorizontal: 15,
+        paddingVertical: 10,
+        borderRadius: 8,
+        marginBottom: 15,
+        fontSize: 16,
+        borderWidth: 1,
+        borderColor: '#004080', // Subtelna ramka
+    },
+    button: {
+        backgroundColor: '#800000', // Czerwony kolor
+        paddingVertical: 15,
+        borderRadius: 8,
+        width: '100%',
+        alignItems: 'center',
+        marginBottom: 20,
+        shadowColor: '#800000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 6,
+        elevation: 5,
+    },
+    buttonText: {
+        color: '#FFFFFF', // Biały tekst
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    loginLink: {
+        marginTop: 10,
+    },
+    loginText: {
+        color: '#AAAAAA', // Jasnoszary tekst
+        fontSize: 14,
+    },
+    loginHighlight: {
+        color: '#800000', // Czerwony akcent
+        fontWeight: 'bold',
+    },
+});
 
 export default RegisterScreen;

@@ -2,10 +2,9 @@ import React, { useEffect, useState } from 'react';
 import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 import Hall from '../components/Hall';
 import axios from "axios";
-import {buyTickets} from "../ticketApi.ts";
+import { buyTickets } from "../ticketApi.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import urlAPI from '../urlAPI';
-
 
 const SeatSelectionScreen = ({ route, navigation }: any) => {
     const { spectacleId } = route.params;
@@ -41,9 +40,9 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
     if (loading) {
         return (
             <View style={styles.container}>
-                <ActivityIndicator size={'large'} />
+                <ActivityIndicator size={'large'} color="#FF4136" />
             </View>
-        )
+        );
     }
 
     if (error) {
@@ -89,25 +88,37 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
 
 const styles = StyleSheet.create({
     container: {
-        padding: 20
+        padding: 20,
+        backgroundColor: '#001F3F', // Ciemnoniebieskie tło
+        flex: 1,
     },
     title: {
         fontSize: 32,
         fontWeight: 'bold',
+        color: '#FFFFFF',
+        marginBottom: 10,
     },
     details: {
         fontSize: 16,
+        color: '#FFFFFF',
+        marginBottom: 5,
     },
     bookButton: {
-        backgroundColor: 'rgb(50, 50, 255)',
-        paddingVertical: 12,
-        paddingHorizontal: 24,
-        borderRadius: 24,
+        backgroundColor: '#800000',
+        paddingVertical: 15,
+        borderRadius: 8,
+        alignItems: 'center',
+        marginTop: 20,
+        shadowColor: '#800000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.4,
+        shadowRadius: 6,
+        elevation: 5,
     },
     bookButtonText: {
-        color: 'white',
+        color: '#FFFFFF',
         fontSize: 18,
-        textAlign: 'center',
+        fontWeight: 'bold',
     },
     selectedSeatsContainer: {
         paddingVertical: 12,
@@ -116,10 +127,12 @@ const styles = StyleSheet.create({
         borderRadius: 30,
         borderColor: 'rgb(150, 150, 150)',
         borderWidth: 1,
+        backgroundColor: '#002D62', // Ciemnoniebieskie tło dla wybranych miejsc
     },
     errorText: {
         color: 'red',
         fontSize: 16,
+        textAlign: 'center',
     },
 });
 
