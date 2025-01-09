@@ -93,6 +93,7 @@ const styles = StyleSheet.create({
     container: {
         flex: 1,
         backgroundColor: '#001F3F',
+        maxHeight: '100vh',
         overflow: Platform.select({
             web: 'scroll',
             default: 'hidden'
