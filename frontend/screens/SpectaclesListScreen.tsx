@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Button, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity } from 'react-native';
+import {View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Platform} from 'react-native';
 import axios from 'axios';
 import urlAPI from '../urlAPI';
 
@@ -52,43 +52,45 @@ const SpectaclesListScreen = ({ navigation }: any) => {
 
   return (
     <View style={styles.container}>
-      <View style={styles.authButtonsContainer}>
-        <TouchableOpacity
-          style={styles.authButton}
-          onPress={() => navigation.navigate('Login')}
-        >
-          <Text style={styles.authButtonText}>Login</Text>
-        </TouchableOpacity>
-        <TouchableOpacity
-          style={styles.authButton}
-          onPress={() => navigation.navigate('Register')}
-        >
-          <Text style={styles.authButtonText}>Register</Text>
-        </TouchableOpacity>
-      </View>
+      <View style={styles.listContainer}>
+        <View style={styles.authButtonsContainer}>
+          <TouchableOpacity
+              style={styles.authButton}
+              onPress={() => navigation.navigate('Login')}
+          >
+            <Text style={styles.authButtonText}>Login</Text>
+          </TouchableOpacity>
+          <TouchableOpacity
+              style={styles.authButton}
+              onPress={() => navigation.navigate('Register')}
+          >
+            <Text style={styles.authButtonText}>Register</Text>
+          </TouchableOpacity>
+        </View>
 
-      <FlatList
-        data={spectacles}
-        keyExtractor={(item) => item.spectacle_id}
-        renderItem={({ item }) => (
-          <View style={styles.spectacleItem}>
-            <Text style={styles.spectacleTitle}>{item.title ?? 'No Title'}</Text>
-            {/* Dodanie daty i godziny */}
-            {item.date && (
-              <Text style={styles.spectacleDateTime}>
-                {formatDate(item.date)}
-              </Text>
+        <FlatList
+            data={spectacles}
+            keyExtractor={(item) => item.spectacle_id}
+            renderItem={({ item }) => (
+                <View style={styles.spectacleItem}>
+                  <Text style={styles.spectacleTitle}>{item.title ?? 'No Title'}</Text>
+                  {/* Dodanie daty i godziny */}
+                  {item.date && (
+                      <Text style={styles.spectacleDateTime}>
+                        {formatDate(item.date)}
+                      </Text>
+                  )}
+                  <Text style={styles.spectacleDescription}>{item.description ?? 'No Description'}</Text>
+                  <TouchableOpacity
+                      style={styles.selectButton}
+                      onPress={() => navigation.navigate('SeatSelection', { spectacleId: item.spectacle_id })}
+                  >
+                    <Text style={styles.selectButtonText}>Select Seats</Text>
+                  </TouchableOpacity>
+                </View>
             )}
-            <Text style={styles.spectacleDescription}>{item.description ?? 'No Description'}</Text>
-            <TouchableOpacity
-              style={styles.selectButton}
-              onPress={() => navigation.navigate('SeatSelection', { spectacleId: item.spectacle_id })}
-            >
-              <Text style={styles.selectButtonText}>Select Seats</Text>
-            </TouchableOpacity>
-          </View>
-        )}
-      />
+        />
+      </View>
     </View>
   );
 };
@@ -96,8 +98,17 @@ const SpectaclesListScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    backgroundColor: '#001F3F'
+  },
+  listContainer: {
+    flex: 1,
     paddingHorizontal: 20,
     backgroundColor: '#001F3F',
+    width: Platform.select({
+      web: '50%',
+      default: '100%'
+    }),
+    margin: 'auto'
   },
   authButtonsContainer: {
     flexDirection: 'row',

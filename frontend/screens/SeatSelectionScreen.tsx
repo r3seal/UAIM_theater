@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ActivityIndicator, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
+import {ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Hall from '../components/Hall';
 import axios from "axios";
 import { buyTickets } from "../ticketApi.ts";
@@ -55,42 +55,53 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={styles.container}>
-            <Text style={styles.title}>{spectacle.title}</Text>
-            <Text style={styles.details}>{'\u{1F551}'} {spectacle.duration} min</Text>
-            <Text style={styles.details}>{'\u{1F4C5}'} {new Date(spectacle.date).toLocaleString()}</Text>
-            <Text style={styles.details}>{spectacle.description}</Text>
+            <View style={styles.reservationContainer}>
+                <Text style={styles.title}>{spectacle.title}</Text>
+                <Text style={styles.details}>{'\u{1F551}'} {spectacle.duration} min</Text>
+                <Text style={styles.details}>{'\u{1F4C5}'} {new Date(spectacle.date).toLocaleString()}</Text>
+                <Text style={styles.details}>{spectacle.description}</Text>
 
-            <Hall
-                hallName={hall.name}
-                seats={seats}
-                selectedSeats={selectedSeats}
-                setSelectedSeats={setSelectedSeats}
-            />
+                <Hall
+                    hallName={hall.name}
+                    seats={seats}
+                    selectedSeats={selectedSeats}
+                    setSelectedSeats={setSelectedSeats}
+                />
 
-            <View style={styles.selectedSeatsContainer}>
-                <Text style={styles.details}>{'\u{1F464}'} x {selectedSeats.length}</Text>
-                {selectedSeats.length > 0 && (
-                    <Text style={styles.details}>
-                        {selectedSeats.map((seatId: any) => {
-                            const seat = seats.find(s => s.seat_id === seatId);
-                            return seat ? `${seat.row}-${seat.seat_number}` : null;
-                        }).filter(Boolean).join(', ')}
-                    </Text>
-                )}
+                <View style={styles.selectedSeatsContainer}>
+                    <Text style={styles.details}>{'\u{1F464}'} x {selectedSeats.length}</Text>
+                    {selectedSeats.length > 0 && (
+                        <Text style={styles.details}>
+                            {selectedSeats.map((seatId: any) => {
+                                const seat = seats.find(s => s.seat_id === seatId);
+                                return seat ? `${seat.row}-${seat.seat_number}` : null;
+                            }).filter(Boolean).join(', ')}
+                        </Text>
+                    )}
+                </View>
+
+                <TouchableOpacity style={styles.bookButton} onPress={() => book()}>
+                    <Text style={styles.bookButtonText}>Book</Text>
+                </TouchableOpacity>
             </View>
-
-            <TouchableOpacity style={styles.bookButton} onPress={() => book()}>
-                <Text style={styles.bookButtonText}>Book</Text>
-            </TouchableOpacity>
         </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
+        flex: 1,
+        backgroundColor: '#001F3F'
+    },
+    reservationContainer: {
         padding: 20,
         backgroundColor: '#001F3F', // Ciemnoniebieskie tło
         flex: 1,
+        width: Platform.select({
+            web: '50%',
+            default: '100%'
+        }),
+        margin: 'auto'
     },
     title: {
         fontSize: 32,
