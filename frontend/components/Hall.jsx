@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Text } from 'react-native';
+import {View, StyleSheet, Text, ScrollView} from 'react-native';
 import Seat from './Seat';
 
 const Hall = ({ hallName, seats, selectedSeats, setSelectedSeats }) => {
@@ -20,23 +20,25 @@ const Hall = ({ hallName, seats, selectedSeats, setSelectedSeats }) => {
     return (
         <View style={styles.hallContainer}>
             <Text style={styles.title}>{hallName}</Text>
-            <View style={styles.grid}>
-                {Object.keys(groupedSeats).map((row) => (
-                    <View key={row} style={styles.row}>
-                        {groupedSeats[row].map((seat) => (
-                            <Seat
-                                key={seat.seat_id}
-                                seat_id={seat.seat_id}
-                                row={seat.row}
-                                seat_number={seat.seat_number}
-                                isAvailable={seat.available}
-                                isSelected={selectedSeats.includes(seat.seat_id)}
-                                onPress={toggleSeat}
-                            />
-                        ))}
-                    </View>
-                ))}
-            </View>
+            <ScrollView horizontal>
+                <View style={styles.grid}>
+                    {Object.keys(groupedSeats).map((row) => (
+                        <View key={row} style={styles.row}>
+                            {groupedSeats[row].map((seat) => (
+                                <Seat
+                                    key={seat.seat_id}
+                                    seat_id={seat.seat_id}
+                                    row={seat.row}
+                                    seat_number={seat.seat_number}
+                                    isAvailable={seat.available}
+                                    isSelected={selectedSeats.includes(seat.seat_id)}
+                                    onPress={toggleSeat}
+                                />
+                            ))}
+                        </View>
+                    ))}
+                </View>
+            </ScrollView>
         </View>
     );
 };
@@ -68,7 +70,9 @@ const styles = StyleSheet.create({
     grid: {
         width: '90%',
         backgroundColor: 'rgba(255, 255, 255, 0.1)', // Przezroczystość białego
-        padding: 12,
+        paddingVertical: 12,
+        paddingHorizontal: 40,
+        margin: "auto",
         borderRadius: 20,
         borderColor: 'rgba(255, 255, 255, 0.2)', // Subtelne obramowanie
         borderWidth: 1,

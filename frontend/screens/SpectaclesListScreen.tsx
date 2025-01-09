@@ -98,7 +98,12 @@ const SpectaclesListScreen = ({ navigation }: any) => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#001F3F'
+    backgroundColor: '#001F3F',
+    overflow: Platform.select({
+      web: 'scroll',
+      default: 'hidden',
+    }),
+    maxHeight: '100vh'
   },
   listContainer: {
     flex: 1,
@@ -108,7 +113,8 @@ const styles = StyleSheet.create({
       web: '50%',
       default: '100%'
     }),
-    margin: 'auto'
+    margin: 'auto',
+    marginBottom: 50
   },
   authButtonsContainer: {
     flexDirection: 'row',

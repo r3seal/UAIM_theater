@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {ActivityIndicator, Platform, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
+import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Hall from '../components/Hall';
 import axios from "axios";
 import { buyTickets } from "../ticketApi.ts";
@@ -31,6 +31,7 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
 
     const book = async () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
+        console.log(accessToken);
         if (accessToken) {
             buyTickets(accessToken, selectedSeats, spectacleId);
         }
@@ -55,7 +56,7 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
 
     return (
         <View style={styles.container}>
-            <View style={styles.reservationContainer}>
+            <ScrollView style={styles.reservationContainer}>
                 <Text style={styles.title}>{spectacle.title}</Text>
                 <Text style={styles.details}>{'\u{1F551}'} {spectacle.duration} min</Text>
                 <Text style={styles.details}>{'\u{1F4C5}'} {new Date(spectacle.date).toLocaleString()}</Text>
@@ -83,7 +84,7 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
                 <TouchableOpacity style={styles.bookButton} onPress={() => book()}>
                     <Text style={styles.bookButtonText}>Book</Text>
                 </TouchableOpacity>
-            </View>
+            </ScrollView>
         </View>
     );
 };
@@ -91,7 +92,11 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        backgroundColor: '#001F3F'
+        backgroundColor: '#001F3F',
+        overflow: Platform.select({
+            web: 'scroll',
+            default: 'hidden'
+        }),
     },
     reservationContainer: {
         padding: 20,
@@ -101,7 +106,7 @@ const styles = StyleSheet.create({
             web: '50%',
             default: '100%'
         }),
-        margin: 'auto'
+        margin: 'auto',
     },
     title: {
         fontSize: 32,
@@ -125,6 +130,7 @@ const styles = StyleSheet.create({
         shadowOpacity: 0.4,
         shadowRadius: 6,
         elevation: 5,
+        marginBottom: 50
     },
     bookButtonText: {
         color: '#FFFFFF',
