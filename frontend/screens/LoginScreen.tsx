@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import Toast from 'react-native-toast-message';
 import {
     View,
     Text,
@@ -9,14 +10,15 @@ import {
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
+import {login} from "../authAPI.ts";
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleLogin = () => {
-        // Logika logowania
-        console.log('Logowanie:', { email, password });
+    const handleLogin = async () => {
+        login(email, password);
+        navigation.navigate('SpectaclesList');
     };
 
     const handleRegister = () => {
@@ -52,6 +54,7 @@ const LoginScreen = ({ navigation }) => {
             <TouchableOpacity style={styles.button} onPress={handleLogin}>
                 <Text style={styles.buttonText}>Log In</Text>
             </TouchableOpacity>
+            <Toast />
             <TouchableOpacity style={styles.registerLink} onPress={handleRegister}>
                 <Text style={styles.registerText}>
                     Don't have an account?{' '}
