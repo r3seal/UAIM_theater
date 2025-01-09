@@ -93,26 +93,36 @@ with app.app_context():
 
     seats = []
     for hall in halls:
-        for row in range(1, 11):
-            for seat_number in range(1, 21):  
+        for row in range(1, 9):
+            # Ustal liczbę miejsc w zależności od rzędu
+            if row == 1:
+                seats_in_row = 10
+            elif row == 2:
+                seats_in_row = 11
+            elif row == 3:
+                seats_in_row = 12
+            elif row == 4:
+                seats_in_row = 13
+            elif 5 <= row <= 8:
+                seats_in_row = 14
+
+            for seat_number in range(1, seats_in_row + 1):
                 seat = Seat(hall_id=hall.hall_id, row=row, seat_number=seat_number)
                 seats.append(seat)
                 db.session.add(seat)
 
     db.session.commit()
 
-    # Create and add 10 tickets per spectacle
     tickets = []
     for spectacle in spectacles:
-        for seat in seats[:10]:  # Use first 10 seats for simplicity
+        for seat in seats[:102]:
             ticket = Ticket(seat_id=seat.seat_id, spectacle_id=spectacle.spectacle_id, price=50.0)
             tickets.append(ticket)
             db.session.add(ticket)
 
     db.session.commit()
 
-    # Create and add 10 sold tickets
-    for i, ticket in enumerate(tickets[:10]):  # First 10 tickets sold
+    for i, ticket in enumerate(tickets[:14]):
         ticket_sold = TicketSold(ticket_id=ticket.ticket_id, user_id=users[i % len(users)].user_id)
         db.session.add(ticket_sold)
 
