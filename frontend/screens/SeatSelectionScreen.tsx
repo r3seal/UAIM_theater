@@ -5,6 +5,7 @@ import axios from "axios";
 import { buyTickets } from "../ticketApi.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import urlAPI from '../urlAPI';
+import Toast from "react-native-toast-message";
 
 const SeatSelectionScreen = ({ route, navigation }: any) => {
     const { spectacleId } = route.params;
@@ -32,10 +33,20 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
     const book = async () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
         console.log(accessToken);
-        if (accessToken) {
-            buyTickets(accessToken, selectedSeats, spectacleId);
+        console.log(selectedSeats);
+        console.log(spectacleId);
+        try {
+            await buyTickets(accessToken, selectedSeats, spectacleId);
+            Toast.show({
+                type: 'success',
+                text1: 'Book successful',
+                visibilityTime: 2000,
+                position: 'top',
+            });
+            setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
+        } catch (error) {
+            console.log(error);
         }
-        navigation.replace('SpectaclesList');
     };
 
     if (loading) {
@@ -85,6 +96,7 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
                     <Text style={styles.bookButtonText}>Book</Text>
                 </TouchableOpacity>
             </ScrollView>
+            <Toast/>
         </View>
     );
 };

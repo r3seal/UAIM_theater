@@ -10,16 +10,35 @@ import {
     Platform,
     ScrollView,
 } from 'react-native';
+import {login, register} from "../authAPI.ts";
+import Toast from "react-native-toast-message";
 
 const RegisterScreen = ({ navigation }) => {
     const [name, setName] = useState('');
     const [email, setEmail] = useState('');
+    const [phone, setPhone] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
-    const handleRegister = () => {
-        // Logika rejestracji
-        console.log('Rejestracja:', { name, email, password, confirmPassword });
+    const handleRegister = async () => {
+        try {
+            await register(name, email, password, phone);
+            Toast.show({
+                type: 'success',
+                text1: 'Registration successful',
+                visibilityTime: 2000,
+                position: 'top',
+            });
+            setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Registration failed',
+                visibilityTime: 4000,
+                position: 'top',
+            });
+        }
     };
 
     const handleLoginRedirect = () => {
@@ -53,6 +72,14 @@ const RegisterScreen = ({ navigation }) => {
                     />
                     <TextInput
                         style={styles.input}
+                        placeholder="Phone number"
+                        placeholderTextColor="#AAAAAA"
+                        value={phone}
+                        onChangeText={setPhone}
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={styles.input}
                         placeholder="Password"
                         placeholderTextColor="#AAAAAA"
                         value={password}
@@ -78,6 +105,7 @@ const RegisterScreen = ({ navigation }) => {
                     </Text>
                 </TouchableOpacity>
             </ScrollView>
+            <Toast/>
         </KeyboardAvoidingView>
     );
 };

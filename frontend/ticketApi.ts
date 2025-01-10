@@ -6,7 +6,7 @@ export const buyTickets = async (token: string | null, seatIds: number[], specta
     const response = await axios.post(
         `${urlAPI}:5000/spectacles/buy`,
         { seat_ids: seatIds, spectacle_id: spectacleId },
-        { headers: { Authorization: `Bearer ${token}` }, withCredentials: true }
+        { headers: { Authorization: `Bearer ${token}` }}
     );
     console.log(response.data);
     return response.data;

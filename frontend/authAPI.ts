@@ -28,4 +28,13 @@ export const logout = async () => {
   }
 }
 
+export const register = async (name: string, email: string, password: string, phone: string) => {
+  try {
+    const response = await axios.post(`${urlAPI}:5000/auth/register`, {
+      name: name, email: email, password: password, phone: phone});
+    return response.data;
+  } catch (error) {
+    throw new Error('Registration failed');
+  }
+};
 
