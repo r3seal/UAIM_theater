@@ -11,11 +11,14 @@ const SpectaclesListScreen = ({ navigation }: any) => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [accessToken, setAccessToken] = useState<string | null>(null);
+  const [permission, setPermission] = useState<string | null>(null);
 
   useEffect(() => {
       const checkAccessToken = async () => {
         const token = await AsyncStorage.getItem('accessToken');
+        const per = await AsyncStorage.getItem('permission');
         setAccessToken(token);
+        setPermission(per);
       };
       checkAccessToken();
     const fetchSpectacles = async () => {
@@ -43,6 +46,7 @@ const SpectaclesListScreen = ({ navigation }: any) => {
       visibilityTime: 2000,
       position: 'top',
     });
+    setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
   }
 
   // Funkcja do formatowania daty
@@ -86,6 +90,14 @@ const SpectaclesListScreen = ({ navigation }: any) => {
                   onPress={() => navigation.navigate('Login')}
               >
                 <Text style={styles.authButtonText}>Login</Text>
+              </TouchableOpacity>
+          )}
+          {permission === "admin" && (
+              <TouchableOpacity
+                  style={styles.authButton}
+                  onPress={() => navigation.navigate('Admin')}
+              >
+                <Text style={styles.authButtonText}>Admin</Text>
               </TouchableOpacity>
           )}
           <TouchableOpacity

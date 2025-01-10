@@ -6,6 +6,7 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import SpectaclesListScreen from './screens/SpectaclesListScreen';
 import SeatSelectionScreen from './screens/SeatSelectionScreen';
+import AdminScreen from "./screens/AdminScreen.tsx";
 
 const Stack = createStackNavigator();
 
@@ -17,6 +18,7 @@ const App = () => {
         <Stack.Screen name="Register" component={RegisterScreen} />
         <Stack.Screen name="SpectaclesList" component={SpectaclesListScreen} />
         <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} />
+        <Stack.Screen name="Admin" component={AdminScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );
