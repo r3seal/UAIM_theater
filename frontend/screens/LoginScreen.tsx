@@ -11,14 +11,31 @@ import {
     Platform,
 } from 'react-native';
 import {login} from "../authAPI.ts";
+import show = Toast.show;
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
 
     const handleLogin = async () => {
-        login(email, password);
-        navigation.navigate('SpectaclesList');
+        try {
+            await login(email, password);
+            Toast.show({
+                type: 'success',
+                text1: 'Login successful',
+                visibilityTime: 2000,
+                position: 'top',
+            });
+            setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
+        } catch (error) {
+            Toast.show({
+                type: 'error',
+                text1: 'Error',
+                text2: 'Invalid username or password.',
+                visibilityTime: 4000,
+                position: 'top',
+            });
+        }
     };
 
     const handleRegister = () => {

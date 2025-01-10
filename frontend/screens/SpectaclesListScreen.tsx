@@ -2,13 +2,22 @@ import React, { useState, useEffect } from 'react';
 import {View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, Platform} from 'react-native';
 import axios from 'axios';
 import urlAPI from '../urlAPI';
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import {logout} from "../authAPI.ts";
+import Toast from "react-native-toast-message";
 
 const SpectaclesListScreen = ({ navigation }: any) => {
   const [spectacles, setSpectacles] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [accessToken, setAccessToken] = useState<string | null>(null);
 
   useEffect(() => {
+      const checkAccessToken = async () => {
+        const token = await AsyncStorage.getItem('accessToken');
+        setAccessToken(token);
+      };
+      checkAccessToken();
     const fetchSpectacles = async () => {
       try {
         const response = await axios.get(`${urlAPI}:5000/spectacles/`);
@@ -25,6 +34,16 @@ const SpectaclesListScreen = ({ navigation }: any) => {
     };
     fetchSpectacles();
   }, []);
+
+  const handleLogout = () => {
+    logout().then(r => setAccessToken(null));
+    Toast.show({
+      type: 'success',
+      text1: 'Logged out',
+      visibilityTime: 2000,
+      position: 'top',
+    });
+  }
 
   // Funkcja do formatowania daty
   const formatDate = (dateString: string) => {
@@ -54,12 +73,21 @@ const SpectaclesListScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.listContainer}>
         <View style={styles.authButtonsContainer}>
-          <TouchableOpacity
-              style={styles.authButton}
-              onPress={() => navigation.navigate('Login')}
-          >
-            <Text style={styles.authButtonText}>Login</Text>
-          </TouchableOpacity>
+          {accessToken !== null ? (
+              <TouchableOpacity
+                  style={styles.authButton}
+                  onPress={() => {handleLogout()}}
+              >
+                <Text style={styles.authButtonText}>Logout</Text>
+              </TouchableOpacity>
+          ) : (
+              <TouchableOpacity
+                  style={styles.authButton}
+                  onPress={() => navigation.navigate('Login')}
+              >
+                <Text style={styles.authButtonText}>Login</Text>
+              </TouchableOpacity>
+          )}
           <TouchableOpacity
               style={styles.authButton}
               onPress={() => navigation.navigate('Register')}
@@ -91,6 +119,7 @@ const SpectaclesListScreen = ({ navigation }: any) => {
             )}
         />
       </View>
+      <Toast/>
     </View>
   );
 };
