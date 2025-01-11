@@ -4,35 +4,43 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addSpectacle, report } from "../adminAPI.ts";
 
 const AdminScreen = () => {
-    const [spectacleData, setSpectacleData] = useState({
-        title: '',
-        description: '',
-        date: new Date(),
-        duration: '',
-        ticket_price_1_to_5: '',
-        ticket_price_above_5: '',
-        hall_name: '',
-    });
+    // Spectacle fields
+    const [title, setTitle] = useState('');
+    const [description, setDescription] = useState('');
+    const [date, setDate] = useState('');
+    const [duration, setDuration] = useState(0);
+    const [ticketPrice1To5, setTicketPrice1To5] = useState(0.0);
+    const [ticketPriceAbove5, setTicketPriceAbove5] = useState(0.0);
+    const [hallName, setHallName] = useState('');
 
-    const [reportData, setReportData] = useState({
-        start_date: new Date(),
-        end_date: new Date(),
-    });
+    // Report fields
+    const [startDate, setStartDate] = useState('');
+    const [endDate, setEndDate] = useState('');
 
     const [loading, setLoading] = useState(false);
     const [reportResult, setReportResult] = useState(null);
 
     // Add Spectacle Handler
     const handleAddSpectacle = async () => {
-        if (Object.values(spectacleData).some(value => !value)) {
+        if (!title || !description || !date || !duration || !ticketPrice1To5 || !ticketPriceAbove5 || !hallName) {
             Alert.alert("Validation Error", "Please fill in all fields.");
             return;
         }
 
+        const spectacleData = {
+            title,
+            description,
+            date,
+            duration,
+            ticket_price_1_to_5: ticketPrice1To5,
+            ticket_price_above_5: ticketPriceAbove5,
+            hall_name: hallName,
+        };
+
         setLoading(true);
         try {
             const accessToken = await AsyncStorage.getItem('access_token');
-            const res = await addSpectacle(accessToken, spectacleData);
+            const res = await addSpectacle(spectacleData, accessToken);
             Alert.alert("Success", "Spectacle added successfully.");
             console.log(res);
         } catch (error) {
@@ -45,29 +53,14 @@ const AdminScreen = () => {
 
     // Generate Report Handler
     const handleGenerateReport = async () => {
-        if (!reportData.start_date || !reportData.end_date) {
-            Alert.alert("Validation Error", "Please provide both start and end dates.");
-            return;
-        }
-
-        setLoading(true);
+        console.log(startDate);
+        console.log(endDate);
         try {
-            const accessToken = await AsyncStorage.getItem('access_token');
-            const res = await report(reportData.start_date.toISOString().split('T')[0], reportData.end_date.toISOString().split('T')[0], accessToken);
-            setReportResult(res); // Save result to state
+            const res = await report(startDate, endDate, "test");
+            console.log(res);
         } catch (error) {
-            Alert.alert("Error", "Failed to generate report.");
             console.error(error);
-        } finally {
-            setLoading(false);
         }
-    };
-
-    const handleDateChange = (date, field) => {
-        setSpectacleData({
-            ...spectacleData,
-            [field]: date,
-        });
     };
 
     return (
@@ -76,29 +69,51 @@ const AdminScreen = () => {
 
             {/* Add Spectacle */}
             <Text style={styles.subtitle}>Add Spectacle</Text>
-            {Object.keys(spectacleData).map((key) => (
-                key !== 'date' ? (
-                    <TextInput
-                        key={key}
-                        style={styles.input}
-                        placeholder={key.replace('_', ' ').toUpperCase()}
-                        value={spectacleData[key]}
-                        onChangeText={(value) =>
-                            setSpectacleData({ ...spectacleData, [key]: value })
-                        }
-                    />
-                ) : (
-                    <View key={key}>
-                        {/* Implement a Date Picker here */}
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Date (YYYY-MM-DD)"
-                            value={spectacleData[key].toISOString().split('T')[0]}
-                            onChangeText={(value) => handleDateChange(new Date(value), key)}
-                        />
-                    </View>
-                )
-            ))}
+            <TextInput
+                style={styles.input}
+                placeholder="Title"
+                value={title}
+                onChangeText={setTitle}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Description"
+                value={description}
+                onChangeText={setDescription}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Date (YYYY-MM-DD)"
+                value={date}
+                onChangeText={setDate}
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Duration (in minutes)"
+                value={String(duration)} // Zmieniamy na string, aby TextInput mógł działać
+                keyboardType="numeric"
+                onChangeText={(text) => setDuration(text ? parseFloat(text) || 0 : 0)} // Jeżeli pusty tekst, przypisujemy 0
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Ticket Price (1-5)"
+                value={String(ticketPrice1To5)}
+                keyboardType="numeric"
+                onChangeText={(text) => setTicketPrice1To5(text ? parseFloat(text) || 0 : 0)} // Podobnie jak wyżej
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Ticket Price (Above 5)"
+                value={String(ticketPriceAbove5)}
+                keyboardType="numeric"
+                onChangeText={(text) => setTicketPriceAbove5(text ? parseFloat(text) || 0 : 0)} // Podobnie jak wyżej
+            />
+            <TextInput
+                style={styles.input}
+                placeholder="Hall Name"
+                value={hallName}
+                onChangeText={setHallName}
+            />
             <Button title="Add Spectacle" onPress={handleAddSpectacle} />
 
             {/* Generate Report */}
@@ -106,18 +121,14 @@ const AdminScreen = () => {
             <TextInput
                 style={styles.input}
                 placeholder="Start Date (YYYY-MM-DD)"
-                value={reportData.start_date.toISOString().split('T')[0]}
-                onChangeText={(value) =>
-                    setReportData({ ...reportData, start_date: new Date(value) })
-                }
+                value={startDate}
+                onChangeText={setStartDate}
             />
             <TextInput
                 style={styles.input}
                 placeholder="End Date (YYYY-MM-DD)"
-                value={reportData.end_date.toISOString().split('T')[0]}
-                onChangeText={(value) =>
-                    setReportData({ ...reportData, end_date: new Date(value) })
-                }
+                value={endDate}
+                onChangeText={setEndDate}
             />
             <Button title="Generate Report" onPress={handleGenerateReport} />
 
