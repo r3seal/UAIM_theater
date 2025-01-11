@@ -38,3 +38,21 @@ export const register = async (name: string, email: string, password: string, ph
   }
 };
 
+export const refreshAccessToken = async (refreshToken: string) => {
+    try {
+        const response = await axios.post(
+            `${urlAPI}/auth/token/refresh`,
+            {},
+            {
+                headers: {
+                    Authorization: `Bearer ${refreshToken}`,
+                },
+            }
+        );
+        await AsyncStorage.setItem('accessToken', response.data.access_token);
+    } catch (error) {
+        throw new Error('Error refreshing token');
+    }
+};
+
+
