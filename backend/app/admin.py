@@ -10,31 +10,6 @@ logging.basicConfig(level=logging.DEBUG)
 # Creating the admin blueprint
 admin_blueprint = Blueprint('admin', __name__)
 
-# # Endpoint to get all users (accessible only to admin)
-# @admin_blueprint.route('/users', methods=['GET'])
-# @jwt_required()
-# def get_users():
-#     current_user_id = get_jwt_identity()
-#     jwt_data = get_jwt()
-#     current_user_role = jwt_data.get('role')
-#     logging.debug(f"Current user ID: {current_user_id}, Role: {current_user_role}")
-    
-#     # Only allow access if the user has admin role
-#     if current_user_role == 'admin':
-#         users = User.query.all()
-#         return jsonify([
-#             {
-#                 "user_id": user.user_id,
-#                 "name": user.name,
-#                 "email": user.email,
-#                 "phone": user.phone,
-#                 "role": user.role.value 
-#             }
-#             for user in users
-#         ])
-#     return jsonify({'message': 'Not allowed'}), 401
-
-
 # Endpoint to add a spectacle (accessible only to admin)
 @admin_blueprint.route('/add_spectacle', methods=['POST'])
 @jwt_required()

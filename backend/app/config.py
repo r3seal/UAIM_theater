@@ -7,21 +7,16 @@ class Config:
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     SECRET_KEY = secrets.token_hex(16)
     JWT_SECRET_KEY = secrets.token_hex(16)
-    JWT_TOKEN_LOCATION = ['cookies']
-    JWT_ACCESS_COOKIE_NAME = 'access_token_cookie'
-    JWT_REFRESH_COOKIE_NAME = 'refresh_token_cookie'
-    JWT_COOKIE_CSRF_PROTECT = False
+    JWT_TOKEN_LOCATION = ['headers']
+    JWT_ACCESS_TOKEN_EXPIRES = 3600  # Expiry time of access token (seconds)
+    JWT_REFRESH_TOKEN_EXPIRES = 2592000  # Expiry time of refresh tokenb (30 days)
 
 
 class TestingConfig(Config):
     TESTING = True
     SECRET_KEY = secrets.token_hex(16)
     JWT_SECRET_KEY = secrets.token_hex(16)
-    JWT_TOKEN_LOCATION = ['cookies']
-    JWT_ACCESS_COOKIE_NAME = 'access_token_cookie'
-    JWT_REFRESH_COOKIE_NAME = 'refresh_token_cookie'
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # Szybka baza in-memory dla testów
+    JWT_TOKEN_LOCATION = ['headers']
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///:memory:'  # in-memory base for tests
     SQLALCHEMY_TRACK_MODIFICATIONS = False
-    JWT_COOKIE_CSRF_PROTECT = False
     WTF_CSRF_ENABLED = False
-    

@@ -56,23 +56,32 @@ def login():
 
     if user and user.check_password(data['password']):
         # Creating access and refresh tokens
-        access_token = create_access_token(identity=str(user.user_id), additional_claims={'role': user.role.value}, expires_delta=timedelta(hours=1))
-        refresh_token = create_refresh_token(identity=str(user.user_id), additional_claims={'role': user.role.value}, expires_delta=timedelta(hours=1))
-        
+        access_token = create_access_token(
+            identity=str(user.user_id), 
+            additional_claims={'role': user.role.value}, 
+            expires_delta=timedelta(hours=1)
+        )
+        refresh_token = create_refresh_token(
+            identity=str(user.user_id), 
+            additional_claims={'role': user.role.value}, 
+            expires_delta=timedelta(hours=1)
+        )
+
         response = jsonify({
             "id": user.user_id,
             "permission": user.role.value,
             "access_token": access_token,
             "refresh_token": refresh_token
         })
-        
-        # Setting JWT tokens as cookies
-        set_access_cookies(response, access_token)
-        set_refresh_cookies(response, refresh_token)
-        
+
+        # Adding JWT tokens to headers
+        response.headers['Authorization-Access'] = f"Bearer {access_token}"
+        response.headers['Authorization-Refresh'] = f"Bearer {refresh_token}"
+
         return response, 200
-    
+
     return jsonify({'message': 'Invalid credentials'}), 401
+
 
 # Token refresh route
 @auth_blueprint.route('/token/refresh', methods=['POST'])
@@ -91,18 +100,16 @@ def refresh_token():
         "user_id": user_id,
         "role": current_user_role
     })
-    
-    # Setting the new access token as a cookie
-    set_access_cookies(response, access_token)
 
-    return response
+    # Adding the new access token to headers
+    response.headers['Authorization-Access'] = f"Bearer {access_token}"
+
+    return response, 200
 
 # User logout route
 @auth_blueprint.route('/logout', methods=['POST'])
 def logout():
     response = jsonify({"message": "Successfully logged out"})
-    
-    # Unsetting JWT cookies (access token and refresh token)
-    unset_jwt_cookies(response)
-    
+
+    # Inform the client to remove tokens if necessary (no cookies to unset in this implementation)
     return response, 200

@@ -19,7 +19,7 @@ def test_get_spectacles(client):
 
     # Wykonaj żądanie GET
     response = client.get('/spectacles/')
-    print(response.status_code)  # Sprawdź kod odpowiedzi
+    print(response.status_code)
     print(response.headers) 
 
     # Sprawdź, czy odpowiedź zawiera spektakl
@@ -61,4 +61,28 @@ def test_get_seat_data(client):
     assert data['seats'][0]['available'] is True
 
 
+def test_reserve_seat_no_ticket(client, user, spectacle_and_ticket):
+    spectacle, _, _ = spectacle_and_ticket
 
+    # Create JWT token for the user
+    access_token = create_access_token(identity=user.user_id)
+
+    # Prepare payload with a seat that doesn't exist
+    seat_ids = [9999]
+    
+    payload = {
+        "seat_ids": seat_ids,
+        "spectacle_id": spectacle.spectacle_id
+    }
+
+    # Set the access token as a cookie
+    client.set_cookie('access_token_cookie', access_token)
+
+    # Make POST request to reserve the seat
+    response = client.post('/spectacles/buy', json=payload)
+    print(response.json)
+    print(response.data)
+
+    # Check for error: No ticket for this seat
+    assert response.status_code == 404
+    assert "No ticket for this seat" in response.json.get('error')
