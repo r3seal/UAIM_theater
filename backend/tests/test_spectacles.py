@@ -6,23 +6,22 @@ from werkzeug.security import generate_password_hash
 
 import datetime
 
+
+# Get spectacles test
 def test_get_spectacles(client):
-    # Tworzenie obiektu typu datetime.date zamiast ciągu znaków
     spectacle = Spectacle(
         title="Spectacle 1", 
         description="Description", 
-        date=datetime.date(2025, 1, 2),  # Używamy datetime.date zamiast ciągu znaków
+        date=datetime.date(2025, 1, 2),  
         duration="02:00:00"
     )
     db.session.add(spectacle)
     db.session.commit()
 
-    # Wykonaj żądanie GET
     response = client.get('/spectacles/')
     print(response.status_code)
     print(response.headers) 
 
-    # Sprawdź, czy odpowiedź zawiera spektakl
     assert response.status_code == 200
     data = response.get_json()
     assert len(data) > 0
@@ -30,14 +29,13 @@ def test_get_spectacles(client):
 
 
 
-# Test dla pobierania danych o dostępnych miejscach
+# Getting seats data test
 def test_get_seat_data(client):
-    # Dodaj spektakl
+
     spectacle = Spectacle(title="Spectacle 1", description="Description", date=datetime.date(2025, 1, 2), duration="02:00:00")
     db.session.add(spectacle)
     db.session.commit()
 
-    # Dodaj salę (hall) i miejsce (seat)
     hall = Hall(name="Main Hall", capacity=100)
     db.session.add(hall)
     db.session.commit()
@@ -46,12 +44,10 @@ def test_get_seat_data(client):
     db.session.add(seat)
     db.session.commit()
 
-    # Dodaj bilet powiązany z miejscem
     ticket = Ticket(spectacle_id=spectacle.spectacle_id, seat_id=seat.seat_id, price=100)
     db.session.add(ticket)
     db.session.commit()
 
-    # Teraz wykonaj żądanie GET
     response = client.get(f'/spectacles/{spectacle.spectacle_id}/seats')
     
     assert response.status_code == 200
@@ -63,26 +59,38 @@ def test_get_seat_data(client):
 
 def test_reserve_seat_no_ticket(client, user, spectacle_and_ticket):
     spectacle, _, _ = spectacle_and_ticket
-
-    # Create JWT token for the user
-    access_token = create_access_token(identity=user.user_id)
-
-    # Prepare payload with a seat that doesn't exist
-    seat_ids = [9999]
     
+    # Log in to get access_token
+    login_data = {
+        "email": "john.doe@gmail.com",
+        "password": "hashed_password"
+    }
+
+    # login request
+    login_response = client.post('/auth/login', json=login_data)
+    print(login_response.json)
+
+    # Checking for login completion
+    assert login_response.status_code == 200
+    access_token = login_response.json.get('access_token')
+
+    # Non-existent seat id
     payload = {
-        "seat_ids": seat_ids,
+        "seat_ids": [9999],  
         "spectacle_id": spectacle.spectacle_id
     }
 
-    # Set the access token as a cookie
-    client.set_cookie('access_token_cookie', access_token)
+    headers = {
+        "Authorization": f"Bearer {access_token}"
+    }
 
-    # Make POST request to reserve the seat
-    response = client.post('/spectacles/buy', json=payload)
-    print(response.json)
-    print(response.data)
+    response = client.post('/spectacles/buy', json=payload, headers=headers)
 
-    # Check for error: No ticket for this seat
+
     assert response.status_code == 404
-    assert "No ticket for this seat" in response.json.get('error')
+    assert response.json.get('error') == "No ticket for this seat"
+
+
+
+
+
