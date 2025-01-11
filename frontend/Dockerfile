@@ -19,9 +19,7 @@ EXPOSE 3000
 RUN ls -al
 
 # Command to start the Expo web app
-CMD ["tail", "-f", "/dev/null"]
-# CMD ["ls", "-la"]
-# CMD ["npm", "run", "web"]
+CMD ["npm", "run", "web"]
 
 
 
