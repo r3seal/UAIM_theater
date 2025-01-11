@@ -19,7 +19,7 @@ def add_spectacle():
     jwt_data = get_jwt()
     current_user_role = jwt_data.get('role')
     logging.debug(f"Current user ID: {current_user_id}, Role: {current_user_role}")
-    
+
     # If the user is not an admin, return an error
     if current_user_role != 'admin':
         return jsonify({"message": "Access forbidden: Admins only."}), 403
@@ -49,9 +49,9 @@ def add_spectacle():
         hall = Hall.query.filter_by(name='Main Hall').first()
         if not hall:
             return jsonify({"message": "No hall found in the database."}), 404
-        
+
         logging.debug(f"Hall selected {hall.name}")
-        
+
         # Add tickets for the first 5 rows
         for row_num in range(1, 6):  # First 5 rows
             for seat_num in range(1, hall.capacity // 5 + 1):  # Number of seats per row
@@ -87,18 +87,18 @@ def add_spectacle():
 
 
 # Endpoint to generate a report based on a date range (accessible only to admin)
-@admin_blueprint.route('/report', methods=['GET'])
+@admin_blueprint.route('/report', methods=['POST'])
 @jwt_required()
 def generate_report():
     current_user_id = get_jwt_identity()
     jwt_data = get_jwt()
     current_user_role = jwt_data.get('role')
     logging.debug(f"Current user ID: {current_user_id}, Role: {current_user_role}")
-    
+
     # Only allow access if the user is an admin
     if current_user_role != 'admin':
         return jsonify({"message": "Access forbidden: Admins only."}), 403
-    
+
     # Retrieve date range (start_date, end_date) from the request body
     data = request.get_json()
     start_date = data.get('start_date')
