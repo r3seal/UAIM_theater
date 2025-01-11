@@ -1,5 +1,6 @@
 import axios from 'axios';
 import urlAPI from './urlAPI';
+import {refresh} from "./authAPI.ts";
 
 export const buyTickets = async (accessToken: string | null, seatIds: number[], spectacleId: number) => {
   try {
@@ -8,8 +9,7 @@ export const buyTickets = async (accessToken: string | null, seatIds: number[], 
         { seat_ids: seatIds, spectacle_id: spectacleId },
         { headers: { Authorization: `Bearer ${accessToken}`}}
     );
-    console.log(response.data);
-    return response.data;
+    return response.status;
   } catch (error) {
     if (axios.isAxiosError(error) && error.response) {
       console.error("Error response:", error.response.data);

@@ -55,4 +55,16 @@ export const refreshAccessToken = async (refreshToken: string) => {
     }
 };
 
+export const refresh = async (apiFunc, ...args) => {
+    try {
+        const refreshToken = await AsyncStorage.getItem('refreshToken');
+        if (refreshToken) {
+            await refreshAccessToken(refreshToken);
+        }
+        return await apiFunc(...args);
+    } catch (error) {
+        throw error;
+    }
+};
+
 
