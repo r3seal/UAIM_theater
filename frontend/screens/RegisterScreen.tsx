@@ -29,7 +29,7 @@ const RegisterScreen = ({ navigation }) => {
                 visibilityTime: 2000,
                 position: 'top',
             });
-            setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
+            setTimeout(() => navigation.navigate('Spectacles'), 2000);
         } catch (error) {
             Toast.show({
                 type: 'error',

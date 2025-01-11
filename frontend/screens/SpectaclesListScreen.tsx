@@ -10,17 +10,14 @@ const SpectaclesListScreen = ({ navigation }: any) => {
   const [spectacles, setSpectacles] = useState<any[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
-  const [accessToken, setAccessToken] = useState<string | null>(null);
   const [permission, setPermission] = useState<string | null>(null);
 
   useEffect(() => {
-      const checkAccessToken = async () => {
-        const token = await AsyncStorage.getItem('accessToken');
+      const checkPermission = async () => {
         const per = await AsyncStorage.getItem('permission');
-        setAccessToken(token);
         setPermission(per);
       };
-      checkAccessToken();
+      checkPermission();
     const fetchSpectacles = async () => {
       try {
         const response = await axios.get(`${urlAPI}:5000/spectacles/`);
@@ -39,21 +36,20 @@ const SpectaclesListScreen = ({ navigation }: any) => {
   }, []);
 
   const handleLogout = () => {
-    logout().then(r => setAccessToken(null));
+    logout().then(r => setPermission(null));
     Toast.show({
       type: 'success',
       text1: 'Logged out',
       visibilityTime: 2000,
       position: 'top',
     });
-    setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
   }
 
   // Funkcja do formatowania daty
   const formatDate = (dateString: string) => {
     const date = new Date(dateString);
     const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
-    return date.toLocaleString('en-GB', options); // Formatuje na '06 Jan 2025, 13:09'
+    return date.toLocaleString('en-GB', options);
   };
 
   if (loading) {
@@ -77,7 +73,7 @@ const SpectaclesListScreen = ({ navigation }: any) => {
     <View style={styles.container}>
       <View style={styles.listContainer}>
         <View style={styles.authButtonsContainer}>
-          {accessToken !== null ? (
+          {permission !== null ? (
               <TouchableOpacity
                   style={styles.authButton}
                   onPress={() => {handleLogout()}}
@@ -114,7 +110,6 @@ const SpectaclesListScreen = ({ navigation }: any) => {
             renderItem={({ item }) => (
                 <View style={styles.spectacleItem}>
                   <Text style={styles.spectacleTitle}>{item.title ?? 'No Title'}</Text>
-                  {/* Dodanie daty i godziny */}
                   {item.date && (
                       <Text style={styles.spectacleDateTime}>
                         {formatDate(item.date)}
@@ -123,7 +118,7 @@ const SpectaclesListScreen = ({ navigation }: any) => {
                   <Text style={styles.spectacleDescription}>{item.description ?? 'No Description'}</Text>
                   <TouchableOpacity
                       style={styles.selectButton}
-                      onPress={() => navigation.navigate('SeatSelection', { spectacleId: item.spectacle_id })}
+                      onPress={() => navigation.navigate('Reservation', { spectacleId: item.spectacle_id })}
                   >
                     <Text style={styles.selectButtonText}>Select Seats</Text>
                   </TouchableOpacity>
@@ -140,8 +135,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#001F3F',
-    overflow: Platform.select({
-      web: 'scroll',
+    overflowY: Platform.select({
+      web: 'auto',
       default: 'hidden',
     }),
     maxHeight: '100vh'

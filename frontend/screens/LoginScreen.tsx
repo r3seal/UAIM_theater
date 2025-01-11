@@ -26,7 +26,7 @@ const LoginScreen = ({ navigation }) => {
                 visibilityTime: 2000,
                 position: 'top',
             });
-            setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
+            setTimeout(() => navigation.navigate('Spectacles'), 2000);
         } catch (error) {
             Toast.show({
                 type: 'error',
@@ -43,51 +43,62 @@ const LoginScreen = ({ navigation }) => {
     };
 
     return (
-        <KeyboardAvoidingView
-            behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            style={styles.container}
-        >
-            <Text style={styles.title}>Welcome Back!</Text>
-            <Text style={styles.subtitle}>Log in to your account</Text>
-            <View style={styles.inputContainer}>
-                <TextInput
-                    style={styles.input}
-                    placeholder="Email"
-                    placeholderTextColor="#AAAAAA"
-                    value={email}
-                    onChangeText={setEmail}
-                    keyboardType="email-address"
-                    autoCapitalize="none"
-                />
-                <TextInput
-                    style={styles.input}
-                    placeholder="Password"
-                    placeholderTextColor="#AAAAAA"
-                    value={password}
-                    onChangeText={setPassword}
-                    secureTextEntry
-                />
-            </View>
-            <TouchableOpacity style={styles.button} onPress={handleLogin}>
-                <Text style={styles.buttonText}>Log In</Text>
-            </TouchableOpacity>
-            <Toast />
-            <TouchableOpacity style={styles.registerLink} onPress={handleRegister}>
-                <Text style={styles.registerText}>
-                    Don't have an account?{' '}
-                    <Text style={styles.registerHighlight}>Register</Text>
-                </Text>
-            </TouchableOpacity>
-        </KeyboardAvoidingView>
+        <View style={styles.container}>
+            <KeyboardAvoidingView
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+                style={styles.loginContainer}
+            >
+                <Text style={styles.title}>Welcome Back!</Text>
+                <Text style={styles.subtitle}>Log in to your account</Text>
+                <View style={styles.inputContainer}>
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Email"
+                        placeholderTextColor="#AAAAAA"
+                        value={email}
+                        onChangeText={setEmail}
+                        keyboardType="email-address"
+                        autoCapitalize="none"
+                    />
+                    <TextInput
+                        style={styles.input}
+                        placeholder="Password"
+                        placeholderTextColor="#AAAAAA"
+                        value={password}
+                        onChangeText={setPassword}
+                        secureTextEntry
+                    />
+                </View>
+                <TouchableOpacity style={styles.button} onPress={handleLogin}>
+                    <Text style={styles.buttonText}>Log In</Text>
+                </TouchableOpacity>
+                <Toast />
+                <TouchableOpacity style={styles.registerLink} onPress={handleRegister}>
+                    <Text style={styles.registerText}>
+                        Don't have an account?{' '}
+                        <Text style={styles.registerHighlight}>Register</Text>
+                    </Text>
+                </TouchableOpacity>
+            </KeyboardAvoidingView>
+        </View>
     );
 };
 
 const styles = StyleSheet.create({
     container: {
         flex: 1,
+        backgroundColor: '#001F3F',
+    },
+    loginContainer: {
+        flex: 1,
         backgroundColor: '#001F3F', // Ciemnoniebieski tło
         alignItems: 'center',
         justifyContent: 'center',
+        width: Platform.select({
+          web: '50%',
+          default: '100%'
+        }),
+        margin: 'auto',
         padding: 20,
     },
     logo: {

@@ -1,24 +1,34 @@
 import React, { useState } from 'react';
-import { View, Text, TextInput, Button, StyleSheet, Alert, ScrollView, ActivityIndicator } from 'react-native';
+import {
+    View,
+    Text,
+    TextInput,
+    Button,
+    StyleSheet,
+    Alert,
+    ScrollView,
+    ActivityIndicator,
+    Platform,
+    TouchableOpacity
+} from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { addSpectacle, report } from "../adminAPI.ts";
+import Toast from "react-native-toast-message";
+import {refresh} from "../authAPI.ts";
 
-const AdminScreen = () => {
+const AdminScreen = ({ route, navigation }): any => {
     // Spectacle fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');
     const [date, setDate] = useState('');
-    const [duration, setDuration] = useState(0);
-    const [ticketPrice1To5, setTicketPrice1To5] = useState(0.0);
-    const [ticketPriceAbove5, setTicketPriceAbove5] = useState(0.0);
+    const [duration, setDuration] = useState('');
+    const [ticketPrice1To5, setTicketPrice1To5] = useState('');
+    const [ticketPriceAbove5, setTicketPriceAbove5] = useState('');
     const [hallName, setHallName] = useState('');
 
     // Report fields
     const [startDate, setStartDate] = useState('');
     const [endDate, setEndDate] = useState('');
-
-    const [loading, setLoading] = useState(false);
-    const [reportResult, setReportResult] = useState(null);
 
     // Add Spectacle Handler
     const handleAddSpectacle = async () => {
@@ -26,38 +36,31 @@ const AdminScreen = () => {
             Alert.alert("Validation Error", "Please fill in all fields.");
             return;
         }
-
-        const spectacleData = {
-            title,
-            description,
-            date,
-            duration,
-            ticket_price_1_to_5: ticketPrice1To5,
-            ticket_price_above_5: ticketPriceAbove5,
-            hall_name: hallName,
-        };
-
-        setLoading(true);
         try {
-            const accessToken = await AsyncStorage.getItem('access_token');
-            const res = await addSpectacle(spectacleData, accessToken);
-            Alert.alert("Success", "Spectacle added successfully.");
-            console.log(res);
+            const accessToken = await AsyncStorage.getItem('accessToken');
+            await addSpectacle(accessToken, title, description, date, duration, ticketPrice1To5, ticketPriceAbove5, hallName);
+            Toast.show({
+                type: 'success',
+                text1: 'Spectacle added successfully',
+                visibilityTime: 2000,
+                position: 'top',
+            });
         } catch (error) {
-            Alert.alert("Error", "Failed to add spectacle.");
             console.error(error);
-        } finally {
-            setLoading(false);
         }
     };
 
     // Generate Report Handler
     const handleGenerateReport = async () => {
-        console.log(startDate);
-        console.log(endDate);
         try {
-            const res = await report(startDate, endDate, "test");
-            console.log(res);
+            const accessToken = await AsyncStorage.getItem("accessToken")
+            let response = await report(startDate, endDate, accessToken);
+            console.log(response.status)
+            if (response.status === 422) {
+                response = await refresh(report, startDate, endDate, accessToken)
+                console.log(response.status)
+            }
+            navigation.navigate('Report', { data: response.data })
         } catch (error) {
             console.error(error);
         }
@@ -65,83 +68,74 @@ const AdminScreen = () => {
 
     return (
         <ScrollView style={styles.container}>
-            <Text style={styles.title}>Admin Panel</Text>
+            <View style={styles.dataContainer}>
+                <Text style={styles.title}>Admin Panel</Text>
 
-            {/* Add Spectacle */}
-            <Text style={styles.subtitle}>Add Spectacle</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Title"
-                value={title}
-                onChangeText={setTitle}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Description"
-                value={description}
-                onChangeText={setDescription}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Date (YYYY-MM-DD)"
-                value={date}
-                onChangeText={setDate}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Duration (in minutes)"
-                value={String(duration)} // Zmieniamy na string, aby TextInput mógł działać
-                keyboardType="numeric"
-                onChangeText={(text) => setDuration(text ? parseFloat(text) || 0 : 0)} // Jeżeli pusty tekst, przypisujemy 0
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Ticket Price (1-5)"
-                value={String(ticketPrice1To5)}
-                keyboardType="numeric"
-                onChangeText={(text) => setTicketPrice1To5(text ? parseFloat(text) || 0 : 0)} // Podobnie jak wyżej
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Ticket Price (Above 5)"
-                value={String(ticketPriceAbove5)}
-                keyboardType="numeric"
-                onChangeText={(text) => setTicketPriceAbove5(text ? parseFloat(text) || 0 : 0)} // Podobnie jak wyżej
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="Hall Name"
-                value={hallName}
-                onChangeText={setHallName}
-            />
-            <Button title="Add Spectacle" onPress={handleAddSpectacle} />
+                <Text style={styles.subtitle}>Add Spectacle</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Title"
+                    value={title}
+                    onChangeText={setTitle}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Description"
+                    value={description}
+                    onChangeText={setDescription}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Date (YYYY-MM-DDTHH:MM:SS)"
+                    value={date}
+                    onChangeText={setDate}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Duration (in minutes)"
+                    value={String(duration)}
+                    onChangeText={(text) => setDuration(text ? parseInt(text) || 0 : 0)}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ticket Price (1-5)"
+                    value={String(ticketPrice1To5)}
+                    onChangeText={(text) => setTicketPrice1To5(text ? parseFloat(text) || 0 : 0)}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Ticket Price (Above 5)"
+                    value={String(ticketPriceAbove5)}
+                    onChangeText={(text) => setTicketPriceAbove5(text ? parseFloat(text) || 0 : 0)}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="Hall Name"
+                    value={hallName}
+                    onChangeText={setHallName}
+                />
+                <TouchableOpacity style={styles.selectButton} onPress={handleAddSpectacle}>
+                    <Text style={styles.selectButtonText}>Add Spectacle</Text>
+                </TouchableOpacity>
 
-            {/* Generate Report */}
-            <Text style={styles.subtitle}>Generate Report</Text>
-            <TextInput
-                style={styles.input}
-                placeholder="Start Date (YYYY-MM-DD)"
-                value={startDate}
-                onChangeText={setStartDate}
-            />
-            <TextInput
-                style={styles.input}
-                placeholder="End Date (YYYY-MM-DD)"
-                value={endDate}
-                onChangeText={setEndDate}
-            />
-            <Button title="Generate Report" onPress={handleGenerateReport} />
-
-            {/* Loading Indicator */}
-            {loading && <ActivityIndicator size="large" color="#0000ff" />}
-
-            {/* Display Report Results */}
-            {reportResult && (
-                <View style={{ marginTop: 20 }}>
-                    <Text style={styles.subtitle}>Report Results:</Text>
-                    <Text>{JSON.stringify(reportResult, null, 2)}</Text>
-                </View>
-            )}
+                <Text style={styles.subtitle}>Generate Report</Text>
+                <TextInput
+                    style={styles.input}
+                    placeholder="Start Date (YYYY-MM-DD)"
+                    value={startDate}
+                    onChangeText={setStartDate}
+                />
+                <TextInput
+                    style={styles.input}
+                    placeholder="End Date (YYYY-MM-DD)"
+                    value={endDate}
+                    onChangeText={setEndDate}
+                />
+                <TouchableOpacity style={styles.selectButton} onPress={handleGenerateReport}>
+                    <Text style={styles.selectButtonText}>Generate Report</Text>
+                </TouchableOpacity>
+                <Toast/>
+            </View>
         </ScrollView>
     );
 };
@@ -149,27 +143,70 @@ const AdminScreen = () => {
 const styles = StyleSheet.create({
     container: {
         flex: 1,
-        padding: 20,
-        backgroundColor: '#fff',
+        backgroundColor: '#001F3F',
+    },
+    dataContainer: {
+        flex: 1,
+        paddingHorizontal: 20,
+        backgroundColor: '#001F3F',
+        width: Platform.select({
+          web: '50%',
+          default: '100%'
+        }),
+        margin: 'auto',
+        marginBottom: 50,
     },
     title: {
         fontSize: 24,
         fontWeight: 'bold',
+        color: '#FFFFFF',
         textAlign: 'center',
-        marginBottom: 20,
+        marginBottom: 10,
+        marginTop: 10,
     },
     subtitle: {
         fontSize: 18,
         fontWeight: 'bold',
-        marginTop: 20,
+        color: '#FFFFFF',
         marginBottom: 10,
     },
     input: {
-        borderWidth: 1,
-        borderColor: '#ccc',
+        backgroundColor: '#002D62',
+        color: '#FFFFFF',
         padding: 10,
-        marginBottom: 10,
         borderRadius: 5,
+        marginBottom: 10,
+    },
+    selectButton: {
+        backgroundColor: '#800000',
+        paddingVertical: 12,
+        borderRadius: 5,
+        alignItems: 'center',
+        marginVertical: 10,
+    },
+    selectButtonText: {
+        color: '#FFFFFF',
+        fontSize: 18,
+        fontWeight: 'bold',
+    },
+    spectacleItem: {
+        padding: 20,
+        marginBottom: 20,
+        backgroundColor: '#002D62',
+        borderRadius: 10,
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 4 },
+        shadowOpacity: 0.2,
+        shadowRadius: 4,
+    },
+    centered: {
+        justifyContent: 'center',
+        alignItems: 'center',
+    },
+    loadingText: {
+        marginTop: 10,
+        fontSize: 16,
+        color: '#FFFFFF',
     },
 });
 

@@ -7,18 +7,20 @@ import RegisterScreen from './screens/RegisterScreen';
 import SpectaclesListScreen from './screens/SpectaclesListScreen';
 import SeatSelectionScreen from './screens/SeatSelectionScreen';
 import AdminScreen from "./screens/AdminScreen.tsx";
+import ReportScreen from "./screens/ReportScreen.tsx";
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="SpectaclesList">
+      <Stack.Navigator initialRouteName="Spectacles">
         <Stack.Screen name="Login" component={LoginScreen} />
         <Stack.Screen name="Register" component={RegisterScreen} />
-        <Stack.Screen name="SpectaclesList" component={SpectaclesListScreen} />
-        <Stack.Screen name="SeatSelection" component={SeatSelectionScreen} />
+        <Stack.Screen name="Spectacles" component={SpectaclesListScreen} />
+        <Stack.Screen name="Reservation" component={SeatSelectionScreen} />
         <Stack.Screen name="Admin" component={AdminScreen} />
+        <Stack.Screen name="Report" component={ReportScreen} />
       </Stack.Navigator>
     </NavigationContainer>
   );

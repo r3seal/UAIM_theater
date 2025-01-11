@@ -6,6 +6,7 @@ import { buyTickets } from "../ticketApi.ts";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import urlAPI from '../urlAPI';
 import Toast from "react-native-toast-message";
+import {refresh, refreshAccessToken} from "../authAPI.ts";
 
 const SeatSelectionScreen = ({ route, navigation }: any) => {
     const { spectacleId } = route.params;
@@ -15,8 +16,14 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
     const [hall, setHall] = useState<any>(null);
     const [loading, setLoading] = useState<any>(true);
     const [error, setError] = useState<any>(null);
+    const [permission, setPermission] = useState<string | null>(null);
 
     useEffect(() => {
+        const checkPermission = async () => {
+        const per = await AsyncStorage.getItem('permission');
+        setPermission(per);
+      };
+      checkPermission();
         axios.get(`${urlAPI}:5000/spectacles/${spectacleId}/seats`)
             .then((response: any) => {
                 setSpectacle(response.data.spectacle);
@@ -32,18 +39,18 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
 
     const book = async () => {
         const accessToken = await AsyncStorage.getItem('accessToken');
-        console.log(accessToken);
-        console.log(selectedSeats);
-        console.log(spectacleId);
         try {
-            await buyTickets(accessToken, selectedSeats, spectacleId);
+            const status = await buyTickets(accessToken, selectedSeats, spectacleId);
+            if (status === 401) {
+                await refresh(buyTickets, accessToken, selectedSeats, spectacleId)
+            }
             Toast.show({
                 type: 'success',
                 text1: 'Book successful',
                 visibilityTime: 2000,
                 position: 'top',
             });
-            setTimeout(() => navigation.navigate('SpectaclesList'), 2000);
+            setTimeout(() => navigation.navigate('Spectacles'), 2000);
         } catch (error) {
             console.log(error);
         }
@@ -92,7 +99,11 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
                     )}
                 </View>
 
-                <TouchableOpacity style={styles.bookButton} onPress={() => book()}>
+                <TouchableOpacity
+                    style={[styles.bookButton,
+                        {backgroundColor: permission === null || selectedSeats.length === 0 ? '#844444' : '#800000'}]}
+                    disabled={permission === null || selectedSeats.length === 0}
+                    onPress={() => book()}>
                     <Text style={styles.bookButtonText}>Book</Text>
                 </TouchableOpacity>
             </ScrollView>
@@ -133,7 +144,6 @@ const styles = StyleSheet.create({
         marginBottom: 5,
     },
     bookButton: {
-        backgroundColor: '#800000',
         paddingVertical: 15,
         borderRadius: 8,
         alignItems: 'center',
