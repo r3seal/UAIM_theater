@@ -117,8 +117,8 @@ const styles = StyleSheet.create({
         flex: 1,
         backgroundColor: '#001F3F',
         maxHeight: '100vh',
-        overflow: Platform.select({
-            web: 'scroll',
+        overflowY: Platform.select({
+            web: 'auto',
             default: 'hidden'
         }),
     },

@@ -155,6 +155,11 @@ const styles = StyleSheet.create({
         }),
         margin: 'auto',
         marginBottom: 50,
+        overflowY: Platform.select({
+          web: 'auto',
+          default: 'hidden'
+        }),
+        maxHeight: '100vh',
     },
     title: {
         fontSize: 24,
