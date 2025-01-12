@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import {View, Text, FlatList, StyleSheet, Platform, ScrollView} from 'react-native';
+import {View, Text, FlatList, StyleSheet, Platform} from 'react-native';
 
-const ReportScreen = ({ route, navigation }) => {
+const ReportScreen = ({ route }) => {
   const { data } = route.params;
   const [reportData, setReportData] = useState(null);
 

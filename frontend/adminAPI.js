@@ -2,7 +2,7 @@ import axios from 'axios';
 import urlAPI from "./urlAPI";
 
 // Report request with Bearer authorization
-export const report = async (startDate: string, endDate: string, accessToken: string | null) => {
+export const report = async (startDate, endDate, accessToken) => {
     try {
         const response = await axios.post(
         `${urlAPI}:5000/admin/report`,
@@ -18,14 +18,14 @@ export const report = async (startDate: string, endDate: string, accessToken: st
 
 
 export const addSpectacle = async (
-    accessToken: string | null,
-    title: string,
-    description: string,
-    date: string,
-    duration: number,
-    ticketPrice1To5: number,
-    ticketPriceAbove5: number,
-    hallName: string
+    accessToken,
+    title,
+    description,
+    date,
+    duration,
+    ticketPrice1To5,
+    ticketPriceAbove5,
+    hallName
 ) => {
     try {
         const response = await axios.post(

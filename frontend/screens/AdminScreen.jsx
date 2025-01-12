@@ -3,20 +3,18 @@ import {
     View,
     Text,
     TextInput,
-    Button,
     StyleSheet,
     Alert,
     ScrollView,
-    ActivityIndicator,
     Platform,
     TouchableOpacity
 } from 'react-native';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { addSpectacle, report } from "../adminAPI.ts";
+import { addSpectacle, report } from "../adminAPI.js";
 import Toast from "react-native-toast-message";
-import {refresh} from "../authAPI.ts";
+import {refresh} from "../authAPI.js";
 
-const AdminScreen = ({ route, navigation }): any => {
+const AdminScreen = ({ route, navigation }) => {
     // Spectacle fields
     const [title, setTitle] = useState('');
     const [description, setDescription] = useState('');

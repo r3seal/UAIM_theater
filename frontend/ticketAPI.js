@@ -1,8 +1,7 @@
 import axios from 'axios';
 import urlAPI from './urlAPI';
-import {refresh} from "./authAPI.ts";
 
-export const buyTickets = async (accessToken: string | null, seatIds: number[], spectacleId: number) => {
+export const buyTickets = async (accessToken, seatIds, spectacleId) => {
   try {
     const response = await axios.post(
         `${urlAPI}:5000/spectacles/buy`,

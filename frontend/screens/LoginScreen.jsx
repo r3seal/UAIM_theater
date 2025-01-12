@@ -6,12 +6,10 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Image,
     KeyboardAvoidingView,
     Platform,
 } from 'react-native';
-import {login} from "../authAPI.ts";
-import show = Toast.show;
+import {login} from "../authAPI.js";
 
 const LoginScreen = ({ navigation }) => {
     const [email, setEmail] = useState('');

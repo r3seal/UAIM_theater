@@ -5,12 +5,11 @@ import {
     TextInput,
     TouchableOpacity,
     StyleSheet,
-    Image,
     KeyboardAvoidingView,
     Platform,
     ScrollView,
 } from 'react-native';
-import {login, register} from "../authAPI.ts";
+import {register} from "../authAPI.js";
 import Toast from "react-native-toast-message";
 
 const RegisterScreen = ({ navigation }) => {

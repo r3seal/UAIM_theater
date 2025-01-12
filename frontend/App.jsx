@@ -6,8 +6,8 @@ import LoginScreen from './screens/LoginScreen';
 import RegisterScreen from './screens/RegisterScreen';
 import SpectaclesListScreen from './screens/SpectaclesListScreen';
 import SeatSelectionScreen from './screens/SeatSelectionScreen';
-import AdminScreen from "./screens/AdminScreen.tsx";
-import ReportScreen from "./screens/ReportScreen.tsx";
+import AdminScreen from "./screens/AdminScreen.jsx";
+import ReportScreen from "./screens/ReportScreen.jsx";
 
 const Stack = createStackNavigator();
 

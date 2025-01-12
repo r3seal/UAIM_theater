@@ -3,21 +3,21 @@ import {View, Text, FlatList, StyleSheet, ActivityIndicator, TouchableOpacity, P
 import axios from 'axios';
 import urlAPI from '../urlAPI';
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import {logout} from "../authAPI.ts";
+import {logout} from "../authAPI.js";
 import Toast from "react-native-toast-message";
 
-const SpectaclesListScreen = ({ navigation }: any) => {
-  const [spectacles, setSpectacles] = useState<any[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
-  const [error, setError] = useState<string | null>(null);
-  const [permission, setPermission] = useState<string | null>(null);
+const SpectaclesListScreen = ({ navigation }) => {
+  const [spectacles, setSpectacles] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [permission, setPermission] = useState(null);
 
   useEffect(() => {
       const checkPermission = async () => {
         const per = await AsyncStorage.getItem('permission');
         setPermission(per);
       };
-      checkPermission();
+      checkPermission().then();
     const fetchSpectacles = async () => {
       try {
         const response = await axios.get(`${urlAPI}:5000/spectacles/`);
@@ -32,11 +32,11 @@ const SpectaclesListScreen = ({ navigation }: any) => {
         }
       }
     };
-    fetchSpectacles();
+    fetchSpectacles().then();
   }, []);
 
   const handleLogout = () => {
-    logout().then(r => setPermission(null));
+    logout().then(() => setPermission(null));
     Toast.show({
       type: 'success',
       text1: 'Logged out',
@@ -46,9 +46,9 @@ const SpectaclesListScreen = ({ navigation }: any) => {
   }
 
   // Funkcja do formatowania daty
-  const formatDate = (dateString: string) => {
+  const formatDate = (dateString) => {
     const date = new Date(dateString);
-    const options: Intl.DateTimeFormatOptions = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
+    const options = { day: '2-digit', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit' };
     return date.toLocaleString('en-GB', options);
   };
 

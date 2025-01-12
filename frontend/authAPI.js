@@ -2,7 +2,7 @@ import axios from 'axios';
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import urlAPI from './urlAPI';
 
-export const login = async (email: string, password: string) => {
+export const login = async (email, password) => {
   try {
     const response = await axios.post(`${urlAPI}:5000/auth/login`, { email, password });
     if (response.status === 200) {
@@ -28,7 +28,7 @@ export const logout = async () => {
   }
 }
 
-export const register = async (name: string, email: string, password: string, phone: string) => {
+export const register = async (name, email, password, phone) => {
   try {
     const response = await axios.post(`${urlAPI}:5000/auth/register`, {
       name: name, email: email, password: password, phone: phone});
@@ -38,7 +38,7 @@ export const register = async (name: string, email: string, password: string, ph
   }
 };
 
-export const refreshAccessToken = async (refreshToken: string) => {
+export const refreshAccessToken = async (refreshToken) => {
     try {
         const response = await axios.post(
             `${urlAPI}/auth/token/refresh`,

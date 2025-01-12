@@ -2,30 +2,30 @@ import React, { useEffect, useState } from 'react';
 import {ActivityIndicator, Platform, ScrollView, StyleSheet, Text, TouchableOpacity, View} from 'react-native';
 import Hall from '../components/Hall';
 import axios from "axios";
-import { buyTickets } from "../ticketApi.ts";
+import { buyTickets } from "../ticketAPI.js";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import urlAPI from '../urlAPI';
 import Toast from "react-native-toast-message";
-import {refresh, refreshAccessToken} from "../authAPI.ts";
+import {refresh} from "../authAPI.js";
 
-const SeatSelectionScreen = ({ route, navigation }: any) => {
+const SeatSelectionScreen = ({ route, navigation }) => {
     const { spectacleId } = route.params;
-    const [seats, setSeats] = useState<any[]>([]);
-    const [spectacle, setSpectacle] = useState<any>(null);
-    const [selectedSeats, setSelectedSeats] = useState<any>([]);
-    const [hall, setHall] = useState<any>(null);
-    const [loading, setLoading] = useState<any>(true);
-    const [error, setError] = useState<any>(null);
-    const [permission, setPermission] = useState<string | null>(null);
+    const [seats, setSeats] = useState([]);
+    const [spectacle, setSpectacle] = useState(null);
+    const [selectedSeats, setSelectedSeats] = useState([]);
+    const [hall, setHall] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    const [permission, setPermission] = useState(null);
 
     useEffect(() => {
         const checkPermission = async () => {
         const per = await AsyncStorage.getItem('permission');
         setPermission(per);
       };
-      checkPermission();
+      checkPermission().then();
         axios.get(`${urlAPI}:5000/spectacles/${spectacleId}/seats`)
-            .then((response: any) => {
+            .then(response => {
                 setSpectacle(response.data.spectacle);
                 setHall(response.data.hall);
                 setSeats(response.data.seats);
@@ -91,7 +91,7 @@ const SeatSelectionScreen = ({ route, navigation }: any) => {
                     <Text style={styles.details}>{'\u{1F464}'} x {selectedSeats.length}</Text>
                     {selectedSeats.length > 0 && (
                         <Text style={styles.details}>
-                            {selectedSeats.map((seatId: any) => {
+                            {selectedSeats.map((seatId) => {
                                 const seat = seats.find(s => s.seat_id === seatId);
                                 return seat ? `${seat.row}-${seat.seat_number}` : null;
                             }).filter(Boolean).join(', ')}
